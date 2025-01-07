@@ -16,3 +16,19 @@ Key Features:
 * Session Export: Export captured traffic in various formats for deeper analysis or sharing with your team.
 
 ReqRes is the perfect companion for developers who need full control over their network traffic. From intercepting and modifying requests and responses to organizing and analyzing sessions, ReqRes ensures your development and debugging processes are faster and more efficient.
+
+
+## FAQ
+
+### I can't start the Network extension 
+
+Most likely, it wasn't approved on the OS level after ReqRes was installed. It can be done in the Network Extensions preferences. Go to `System Settings > General > Login Items & Extensions > Network Extensions`.
+
+<img width="891" alt="image" src="https://github.com/user-attachments/assets/1d119956-062f-42c3-b0a7-dc37ad542e75" />
+
+
+The Network Extensions popup shows up after the Information icon is clicked (from the previous screenshot). ReqRes must be enabled:
+
+<img width="594" alt="image" src="https://github.com/user-attachments/assets/7a58a2c6-3604-4932-96dd-7e4bb71c43a0" />
+
+Try starting the network monitoring again after it's enabled.
