@@ -2,9 +2,13 @@
 
 <img width="2280" alt="image" src="https://reqresapp.com/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Fmain-window-dark%402x.aa1a7b8d.png&w=3840&q=75">
 
-ReqRes is the ultimate developer tool for capturing, intercepting, and debugging HTTP(s) traffic on macOS. Designed for web developers, API testers, and network engineers, ReqRes makes tracking, analyzing, and modifying HTTP(s) requests and responses a breeze, all in real-time.
+ReqRes is the ultimate developer tool for capturing, intercepting, and debugging HTTP(s) traffic on macOS. Designed for web developers, API testers, and network engineers, ReqRes makes tracking, analyzing, and modifying HTTP(s) requests and responses a breeze, all in real time.
 
-Key Features:
+> [!NOTE]
+>
+> You’re more than welcome to join our [TestFlight](https://testflight.apple.com/join/KTvNpdBW) ✈️ and try out the public beta.
+
+### Key Features
 * Real-time HTTP(s) Traffic Monitoring: Instantly capture and view HTTP(s) requests and responses from your macOS apps, browsers, and APIs.
 * Request and Response Interception: Seamlessly intercept HTTP(s) traffic to modify headers, status codes, and even entire response bodies. Customize responses by mapping requests to local files for faster development and testing.
 * Detailed Inspection: Inspect every aspect of captured traffic, including headers, methods, status codes, and payloads, all in a user-friendly, organized interface.
@@ -22,7 +26,7 @@ ReqRes is the perfect companion for developers who need full control over their 
 
 ### I can't start the Network extension 
 
-Most likely, it wasn't approved on the OS level after ReqRes was installed. It can be done in the Network Extensions preferences. Go to `System Settings > General > Login Items & Extensions > Network Extensions`.
+It was most likely not approved on the OS level after ReqRes was installed. It can be done using the Network Extensions preferences. Go to `System Settings > General > Login Items & Extensions > Network Extensions`.
 
 <img width="891" alt="image" src="https://github.com/user-attachments/assets/1d119956-062f-42c3-b0a7-dc37ad542e75" />
 
