@@ -1,12 +1,13 @@
 # ReqRes - Modern Web Debugging Proxy
 
-<img width="2280" alt="image" src="https://reqresapp.com/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Fmain-window-dark%402x.aa1a7b8d.png&w=3840&q=75">
-
-ReqRes is the ultimate developer tool for capturing, intercepting, and debugging HTTP(s) traffic on macOS. Designed for web developers, API testers, and network engineers, ReqRes makes tracking, analyzing, and modifying HTTP(s) requests and responses a breeze, all in real time.
 
 > [!NOTE]
 >
 > You’re more than welcome to join our [TestFlight](https://testflight.apple.com/join/KTvNpdBW) ✈️ and try out the public beta.
+> 
+<img width="2280" alt="image" src="https://reqresapp.com/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Fmain-window-dark%402x.aa1a7b8d.png&w=3840&q=75">
+
+ReqRes is the ultimate developer tool for capturing, intercepting, and debugging HTTP(s) traffic on macOS. Designed for web developers, API testers, and network engineers, ReqRes makes tracking, analyzing, and modifying HTTP(s) requests and responses a breeze, all in real time.
 
 ### Key Features
 * Real-time HTTP(s) Traffic Monitoring: Instantly capture and view HTTP(s) requests and responses from your macOS apps, browsers, and APIs.
