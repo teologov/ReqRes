@@ -1,1 +1,14 @@
-
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>ReqRes</title>
+        <item>
+            <title>1.0.0</title>
+            <pubDate>Wed, 12 Mar 2025 11:50:17 +0100</pubDate>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+            <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes.dmg" length="37462341" type="application/octet-stream" sparkle:edSignature="ptxw5KhZL8YoIJmpu6IIrK4zKk+wwRAJ2zX+Pc8CLezfAWWKlMl9RSzQGCuh6uoJOApDFQ7v1TrHoP6owAAkAg=="/>
+        </item>
+    </channel>
+</rss>
