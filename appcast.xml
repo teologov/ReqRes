@@ -4,11 +4,11 @@
         <title>ReqRes</title>
         <item>
             <title>1.0.0</title>
-            <pubDate>Wed, 12 Mar 2025 11:50:17 +0100</pubDate>
+            <pubDate>Wed, 12 Mar 2025 14:44:41 +0100</pubDate>
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
-            <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes.dmg" length="37462341" type="application/octet-stream" sparkle:edSignature="ptxw5KhZL8YoIJmpu6IIrK4zKk+wwRAJ2zX+Pc8CLezfAWWKlMl9RSzQGCuh6uoJOApDFQ7v1TrHoP6owAAkAg=="/>
+            <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes.dmg" length="37468575" type="application/octet-stream" sparkle:edSignature="E7tATJ94+MHa02qpM1ny+FrYF4HOzwo1nL/3LTJo7mZabHs5aIFENGI4o38oHtKxMaHDmmyJIOGB2ESOq9iBAg=="/>
         </item>
     </channel>
 </rss>
