@@ -3,12 +3,23 @@
     <channel>
         <title>ReqRes</title>
         <item>
+            <title>1.0.1</title>
+            <pubDate>Tue, 18 Mar 2025 21:15:09 +0100</pubDate>
+            <sparkle:version>2</sparkle:version>
+            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/OloApps/ReqRes/releases/download/1.0.1/ReqRes-1.0.1.dmg" length="37141297" type="application/octet-stream" sparkle:edSignature="Z76v8xB0OvS+6poU4vwSVphoboDBkpkXSGBgAWM89e1ltpmFuvjWEIYpbU42aRQhsaz5v8+uGBymyDfWFIuPAQ=="/>
+            <sparkle:deltas>
+                <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes2-1.delta" sparkle:deltaFrom="1" length="1115534" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="cpAdtZdauUC63AVI+uRrfSfx894keb+XRZoEyd9Ux3AH32zAc2j8kN+zi5wl1od7plDp0Hxrhs/2V84Y3R/wAA=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>1.0.0</title>
             <pubDate>Mon, 17 Mar 2025 12:01:50 +0100</pubDate>
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
-            <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes.dmg" length="37114285" type="application/octet-stream" sparkle:edSignature="Idee1YN4kjFJP7snzXAZQiuYbQ5sctRplsWZn6nVIoaDnIl0fjbonApFSoBrFAvy4/9f+EqCECK9q+vlnIq8Cw=="/>
+            <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes-1.0.0.dmg" length="37114285" type="application/octet-stream" sparkle:edSignature="Idee1YN4kjFJP7snzXAZQiuYbQ5sctRplsWZn6nVIoaDnIl0fjbonApFSoBrFAvy4/9f+EqCECK9q+vlnIq8Cw=="/>
         </item>
     </channel>
 </rss>
