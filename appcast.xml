@@ -3,6 +3,18 @@
     <channel>
         <title>ReqRes</title>
         <item>
+            <title>1.0.2</title>
+            <pubDate>Wed, 19 Mar 2025 12:09:09 +0100</pubDate>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/OloApps/ReqRes/releases/download/1.0.2/ReqRes-1.0.2.dmg" length="37154363" type="application/octet-stream" sparkle:edSignature="XjAhUzbn8Aq6mtr6pxQvlUJTWkfekER5V0qbcUGXnIjUx1+J1AfJ9m9TekVtYjyls1mz+Xtt6aIjUPEj+vb3Aw=="/>
+            <sparkle:deltas>
+                <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes3-2.delta" sparkle:deltaFrom="2" length="998938" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="loG82WAB2D7ueIjDmUB7klweg1U47YR/JfwvLzDJ4vBO0z+yDJ86+zYmniumsgvK5HUqzGjJbMGN3fiDq85MCA=="/>
+                <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes3-1.delta" sparkle:deltaFrom="1" length="1467098" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="gX2OvZ9jkWTz7yyaQzQBn8+wcnMBCFEXyTrL+DLOP6+L4y/jrsq/QpVHmpW7slqeQi5D9wKKqTmMKviYFu1vCw=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>1.0.1</title>
             <pubDate>Tue, 18 Mar 2025 21:15:09 +0100</pubDate>
             <sparkle:version>2</sparkle:version>
@@ -19,7 +31,7 @@
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/OloApps/ReqRes/releases/download/1.0.0/ReqRes-1.0.0.dmg" length="37114285" type="application/octet-stream" sparkle:edSignature="Idee1YN4kjFJP7snzXAZQiuYbQ5sctRplsWZn6nVIoaDnIl0fjbonApFSoBrFAvy4/9f+EqCECK9q+vlnIq8Cw=="/>
+            <enclosure url="https://github.com/OloApps/ReqRes/releases/download/1.0.1/ReqRes-1.0.0.dmg" length="37114285" type="application/octet-stream" sparkle:edSignature="Idee1YN4kjFJP7snzXAZQiuYbQ5sctRplsWZn6nVIoaDnIl0fjbonApFSoBrFAvy4/9f+EqCECK9q+vlnIq8Cw=="/>
         </item>
     </channel>
 </rss>
