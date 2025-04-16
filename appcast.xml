@@ -3,6 +3,19 @@
     <channel>
         <title>ReqRes</title>
         <item>
+            <title>1.0.3</title>
+            <pubDate>Wed, 16 Apr 2025 20:16:46 +0200</pubDate>
+            <sparkle:version>20</sparkle:version>
+            <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+            <enclosure url="https://github.com/OloApps/ReqRes/releases/download/1.0.3/ReqRes-1.0.3.dmg" length="37697734" type="application/octet-stream" sparkle:edSignature="2SBuZE8NtowcPrMj98yWVOJB49y38uBnB99XrtjeZmdLCsK+pHQqyd1mI/bEKfo36jwLX0Ky5SW2pGqBuTRrDQ=="/>
+            <sparkle:deltas>
+                <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes20-3.delta" sparkle:deltaFrom="3" length="7257222" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="x47sph56oqeOPvUJoLK40OkgcR6cewafZAo5VNTd4WFLZ/Qe0YqTtlD/FfcRPSn9GLB/bxsCKCcz71TFWgmiCw=="/>
+                <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes20-2.delta" sparkle:deltaFrom="2" length="7267398" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="ORZC0O2p8bZV0j7ouDpv9K5QWlMnJrSRu2WXCqxIckrlzGymhYgtnTyGiv+G9OAJ9ni6x/sxZyRad5F+QXlsDg=="/>
+                <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes20-1.delta" sparkle:deltaFrom="1" length="7275702" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="vfhXPHSxVC4VsT25vajT9b0cVT/PKFcqeB7jV74J0biFT5gbgonPcqNnijurwWMTQWnTuXSHpByMuGpWlKx3CQ=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>1.0.2</title>
             <pubDate>Wed, 19 Mar 2025 12:09:09 +0100</pubDate>
             <sparkle:version>3</sparkle:version>
@@ -24,14 +37,6 @@
             <sparkle:deltas>
                 <enclosure url="https://raw.githubusercontent.com/OloApps/ReqRes/refs/heads/main/ReqRes2-1.delta" sparkle:deltaFrom="1" length="1115534" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="cpAdtZdauUC63AVI+uRrfSfx894keb+XRZoEyd9Ux3AH32zAc2j8kN+zi5wl1od7plDp0Hxrhs/2V84Y3R/wAA=="/>
             </sparkle:deltas>
-        </item>
-        <item>
-            <title>1.0.0</title>
-            <pubDate>Mon, 17 Mar 2025 12:01:50 +0100</pubDate>
-            <sparkle:version>1</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/OloApps/ReqRes/releases/download/1.0.1/ReqRes-1.0.0.dmg" length="37114285" type="application/octet-stream" sparkle:edSignature="Idee1YN4kjFJP7snzXAZQiuYbQ5sctRplsWZn6nVIoaDnIl0fjbonApFSoBrFAvy4/9f+EqCECK9q+vlnIq8Cw=="/>
         </item>
     </channel>
 </rss>
