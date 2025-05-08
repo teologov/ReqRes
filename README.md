@@ -6,6 +6,7 @@ ReqRes is the ultimate developer tool for capturing, intercepting, and debugging
 <img width="2280" alt="image" src="https://reqresapp.com/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Fmain-window-no-bg-dark%402x.7ec2b792.png&w=1920&q=75">
 
 ### Key Features
+
 * Real-time HTTP(s) Traffic Monitoring: Instantly capture and view HTTP(s) requests and responses from your macOS apps, browsers, and APIs.
 * Request and Response Interception: Seamlessly intercept HTTP(s) traffic to modify headers, status codes, and even entire response bodies. Customize responses by mapping requests to local files for faster development and testing.
 * Detailed Inspection: Inspect every aspect of captured traffic, including headers, methods, status codes, and payloads, all in a user-friendly, organized interface.
