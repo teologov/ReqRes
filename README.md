@@ -19,6 +19,65 @@ ReqRes is the ultimate developer tool for capturing, intercepting, and debugging
 
 ReqRes is the perfect companion for developers who need full control over their network traffic. From intercepting and modifying requests and responses to organizing and analyzing sessions, ReqRes ensures your development and debugging processes are faster and more efficient.
 
+## License
+
+This project is licensed under FSL-1.1-ALv2 - see the [LICENSE.md](LICENSE.md) file for details.
+
+For third-party dependencies and their licenses, see [LICENSE-THIRD-PARTY.md](LICENSE-THIRD-PARTY.md).
+
+# Development Setup & Configuration
+
+## Overview
+
+This project requires a local configuration file to run. The app expects two environment variables: `DEVELOPMENT_TEAM` (required for code signing) and `SENTRY_DSN` (optional for crash reporting). The app will still work without Sentry configuration.
+
+## Quick Setup
+
+1. **Copy the configuration template:**
+   ```bash
+   cp Config.xcconfig.template Config.xcconfig
+   ```
+
+2. **Edit `Config.xcconfig` with your values:**
+   ```bash
+   # Open in your preferred editor
+   nano Config.xcconfig
+   ```
+
+3. **Add your development credentials:**
+   - `DEVELOPMENT_TEAM`: Your Apple Developer Team ID (required)
+   - `SENTRY_DSN`: Your Sentry project DSN (optional)
+
+4. **Build and run the project**
+
+## Configuration Files
+
+### `Config.xcconfig` (Not tracked in Git)
+This file contains your personal development configuration. **Never commit this file to git.**
+
+Required values:
+- `DEVELOPMENT_TEAM`: Your Apple Developer Team ID
+- `SENTRY_DSN`: Your Sentry project DSN for crash reporting (optional)
+
+### `Config.xcconfig.template` (Tracked in Git)
+Template file showing the required configuration keys. Copy this to create your local `Config.xcconfig`.
+
+## How It Works
+
+The `Config.xcconfig` file is linked to both Debug and Release build configurations. Variables from the config file are automatically substituted into the project at build time.
+
+## Troubleshooting
+
+### Configuration not loading?
+1. Verify `Config.xcconfig` exists and has correct syntax (no quotes around values)
+2. Check that the config file is linked in Project Settings → Info → Configurations
+3. Clean build folder (Product → Clean Build Folder) and rebuild
+4. Ensure variable names match exactly between config file and Info.plist
+
+### Build errors about missing Team ID?
+1. Make sure `DEVELOPMENT_TEAM` is set in your `Config.xcconfig`
+2. Verify you have valid Apple Developer account access
+3. You can leave `DEVELOPMENT_TEAM` empty to use local signing
 
 ## FAQ
 
