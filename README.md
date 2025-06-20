@@ -1,21 +1,30 @@
-# ReqRes - Modern Web Debugging Proxy
+# 🚀 ReqRes – A Modern Web Debugging Proxy for macOS
 
-ReqRes is the ultimate developer tool for capturing, intercepting, and debugging HTTP(s) traffic on macOS. Designed for web developers, API testers, and network engineers, ReqRes makes tracking, analyzing, and modifying HTTP(s) requests and responses a breeze, all in real time.
-
+**ReqRes** is a modern, high-performance, native web debugging proxy for macOS.
+It lets you capture, inspect, modify, and intercept HTTP(S) traffic in real time.
 
 <img width="2280" alt="image" src="https://reqresapp.com/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Fmain-window-no-bg-dark%402x.7ec2b792.png&w=1920&q=75">
 
-### Key Features
+### 🔑 Key Features
 
-* Real-time HTTP(s) Traffic Monitoring: Instantly capture and view HTTP(s) requests and responses from your macOS apps, browsers, and APIs.
-* Request and Response Interception: Seamlessly intercept HTTP(s) traffic to modify headers, status codes, and even entire response bodies. Customize responses by mapping requests to local files for faster development and testing.
-* Detailed Inspection: Inspect every aspect of captured traffic, including headers, methods, status codes, and payloads, all in a user-friendly, organized interface.
-* Session Management: Easily organize, filter, and search through captured sessions, allowing you to focus on the data that matters most.
-* Local File Mapping: Speed up your API testing process by mapping network requests to local files, enabling custom responses or testing how your app handles offline data.
-* Image Preview: View image responses directly within the app, perfect for debugging media APIs.
-* Customizable Filters: Filter traffic based on hosts, methods, or status codes, allowing you to quickly pinpoint the information you need.
-* Integrated Search Bar: Find specific requests or responses with ease using the built-in search functionality.
-* Session Export: Export captured traffic in various formats for deeper analysis or sharing with your team.
+* 🔍 **Real-time HTTP(S) Traffic Monitoring**  
+  Instantly capture and view HTTP(S) requests and responses from your macOS apps, browsers, and APIs.
+* ✋ **Request & Response Interception**  
+  Intercept and modify traffic on the fly—change headers, status codes, or entire response bodies. Map requests to local files for faster testing and development.
+* 🧪 **Detailed Inspection**  
+  Dive deep into every request and response with an intuitive interface—view headers, methods, status codes, and payloads with ease.
+* 📂 **Session Management**  
+  Organize, filter, and search through captured sessions so you can focus on what matters most.
+* 🗂️ **Local File Mapping**  
+  Speed up API testing by mapping network requests to local files. Simulate offline scenarios and serve mock data instantly.
+* 🖼️ **Image Preview**  
+  Instantly view image responses inside the app—ideal for debugging media-heavy APIs.
+* 🎯 **Customizable Filters**  
+  Filter traffic by host, method, or status code to quickly narrow down your results.
+* 🔎 **Integrated Search Bar**  
+  Quickly find specific requests or responses with powerful built-in search.
+* 📤 **Session Export**  
+  Export captured traffic in multiple formats for analysis or collaboration with your team.
 
 ReqRes is the perfect companion for developers who need full control over their network traffic. From intercepting and modifying requests and responses to organizing and analyzing sessions, ReqRes ensures your development and debugging processes are faster and more efficient.
 
@@ -50,22 +59,6 @@ This project requires a local configuration file to run. The app expects two env
 
 4. **Build and run the project**
 
-## Configuration Files
-
-### `Config.xcconfig` (Not tracked in Git)
-This file contains your personal development configuration. **Never commit this file to git.**
-
-Required values:
-- `DEVELOPMENT_TEAM`: Your Apple Developer Team ID
-- `SENTRY_DSN`: Your Sentry project DSN for crash reporting (optional)
-
-### `Config.xcconfig.template` (Tracked in Git)
-Template file showing the required configuration keys. Copy this to create your local `Config.xcconfig`.
-
-## How It Works
-
-The `Config.xcconfig` file is linked to both Debug and Release build configurations. Variables from the config file are automatically substituted into the project at build time.
-
 ## Troubleshooting
 
 ### Configuration not loading?
@@ -80,6 +73,16 @@ The `Config.xcconfig` file is linked to both Debug and Release build configurati
 3. You can leave `DEVELOPMENT_TEAM` empty to use local signing
 
 ## FAQ
+
+### Is app sandboxed?
+Yes.
+
+### Do you have a roadmap?
+As of Q2 2025, we're gathering feedback and working on proper user documentation.
+We will provide a more detailed roadmap later this year.
+
+### Do you accept PRs?
+Yes. Pull Requests are accepted for UI bug fixes. We are not ready yet to accept Pull Requests for the server side.
 
 ### I can't start the Network extension 
 
