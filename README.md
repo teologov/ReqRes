@@ -3,7 +3,7 @@
 **ReqRes** is a modern, high-performance, native web debugging proxy for macOS.
 It lets you capture, inspect, modify, and intercept HTTP(S) traffic in real time.
 
-<img width="2280" alt="image" src="https://reqresapp.com/_next/image/?url=%2F_next%2Fstatic%2Fmedia%2Fmain-window-no-bg-dark%402x.7ec2b792.png&w=1920&q=75">
+<img width="2280" alt="image" src="https://reqresapp.com/assets/images/og-image.jpg">
 
 ### 🔑 Key Features
 
@@ -14,7 +14,7 @@ It lets you capture, inspect, modify, and intercept HTTP(S) traffic in real time
 * 🧪 **Detailed Inspection**  
   Dive deep into every request and response with an intuitive interface—view headers, methods, status codes, and payloads with ease.
 * 📂 **Session Management**  
-  Organize, filter, and search through captured sessions so you can focus on what matters most.
+  Organize, filter, and search through captured sessions.
 * 🗂️ **Local File Mapping**  
   Speed up API testing by mapping network requests to local files. Simulate offline scenarios and serve mock data instantly.
 * 🖼️ **Image Preview**  
