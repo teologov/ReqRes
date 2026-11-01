@@ -3,6 +3,47 @@
     <channel>
         <title>ReqRes</title>
         <item>
+            <title>1.1.0</title>
+            <pubDate>Sun, 01 Nov 2026 23:39:13 +0000</pubDate>
+            <sparkle:version>62</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.6</sparkle:minimumSystemVersion>
+            <sparkle:phasedRolloutInterval>86400</sparkle:phasedRolloutInterval>
+            <description><![CDATA[
+<p>ReqRes 1.1.0 rebuilds the capture engine for today&#x27;s protocols, lets an AI agent read and change traffic through a built-in MCP server, and turns the licence into a one-time purchase that covers every version.</p>
+<h3>Capture</h3>
+<ul>
+<li>One row per request, with the app that sent it and the country it went to. Slow requests and streams are listed while they run; failed, aborted and timed-out requests are rows that say why.</li>
+<li>HTTP/2 (beta, off by default), WebSocket messages both ways, server-sent events and NDJSON streams, gRPC-Web and Connect without a schema, native gRPC (beta). Bodies are shown decoded from gzip, deflate, brotli and zstd.</li>
+<li>Plain HTTP on any port, a configurable proxy port, and SSL-pinned traffic relayed and shown instead of broken.</li>
+</ul>
+<h3>Changing traffic</h3>
+<ul>
+<li>Rules are decided once per request, by method and URL. Map Local and Override with a body are answered by ReqRes without reaching the server.</li>
+<li>Breakpoints hold a request so it can be read, edited, resumed or aborted.</li>
+<li>Excluded hosts are relayed untouched and never recorded.</li>
+</ul>
+<h3>AI agents</h3>
+<ul>
+<li>A built-in MCP server with 33 tools: read, wait for, diff and export traffic, create rules and mocks, answer held requests. Credentials are redacted before anything leaves the app, and changes wait for approval.</li>
+</ul>
+<h3>Security</h3>
+<ul>
+<li>A certificate authority generated on each Mac, the proxy and the MCP server on 127.0.0.1 only, an authenticated channel between the app and its extension, and Sparkle 2.9.6.</li>
+</ul>
+<h3>App</h3>
+<ul>
+<li>A new window and toolbar, a menu bar item, saved sessions, HAR export, the Destinations map, in-app Help and Diagnose Setup.</li>
+</ul>
+<h3>Licence</h3>
+<ul>
+<li>One purchase, $60 per person on up to 2 Macs, with every future version included. The free version keeps every feature, with three limits.</li>
+</ul>
+<p>Requires macOS 14.6 or later.</p>
+            ]]></description>
+            <enclosure url="https://github.com/teologov/ReqRes/releases/download/1.1.0/ReqRes-1.1.0.dmg" length="50872073" type="application/octet-stream" sparkle:edSignature="pkDkHsJouas7FTWshprmniBRbgZWhCwDPoEex/2laRPSJRy9OEQ+kSbanTNoBSjrn8aYHF2VmOQS6/wMUdIzAQ=="/>
+        </item>
+        <item>
             <title>1.0.4</title>
             <pubDate>Mon, 18 Aug 2025 17:59:41 +0200</pubDate>
             <sparkle:version>41</sparkle:version>
