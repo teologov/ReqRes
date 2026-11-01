@@ -1,10 +1,10 @@
 //
 //  Date+Extension.swift
-//  TunnelServices
+//  AppServices
 //
 //  Created by OloApps on 20.05.2021.
 //
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,16 +23,17 @@
 import Foundation
 
 extension Date {
-    public var fullSting: String {
-        let dateFormatter = DateFormatter.init()
-        dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
-        let dataString = dateFormatter.string(from: self)
-        return dataString
-    }
+    /// The time of day with milliseconds, as the traffic table and the
+    /// request timings print it: `14:03:27.418`, in the Mac's time zone.
     public var CurrentStringTimeForCell: String {
-        let dateFormatter = DateFormatter.init()
-        dateFormatter.dateFormat = "HH:mm:ss.SSS" //"YYYY-MM-dd HH:mm:ss"
-        let dataString = dateFormatter.string(from: self)
-        return dataString
+        Self.cellTimeFormatter.string(from: self)
     }
+
+    /// One formatter for every row: `DateFormatter` is costly to make and
+    /// safe to share since macOS 10.9.
+    private static let cellTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss.SSS"
+        return formatter
+    }()
 }

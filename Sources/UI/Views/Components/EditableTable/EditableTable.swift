@@ -4,7 +4,7 @@
 //
 //  Created by OloApps on 8/27/24.
 //
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -46,77 +46,86 @@ extension Array where Element == HeaderEntry {
 }
 
 
+/// The header editor as a sheet: edits a DRAFT, so Cancel discards and Done
+/// applies. It used to be a hand-built NSWindow that wrote every keystroke
+/// straight into the rule with no way back.
+struct HeaderEditorSheet: View {
+    let title: String
+    @Binding var headers: [HeaderEntry]
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft: [HeaderEntry] = []
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+
+            HeaderListView(headers: $draft)
+
+            HStack {
+                Button("Cancel") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Spacer()
+                Button("Done") {
+                    headers = draft.filter { !$0.key.trimmingCharacters(in: .whitespaces).isEmpty }
+                    dismiss()
+                }
+                .keyboardShortcut(.defaultAction)
+            }
+            .padding(.top, 8)
+        }
+        .padding(24)
+        .frame(width: 480)
+        .onAppear { draft = headers }
+    }
+}
+
+/// A key/value table with add and remove.
 struct HeaderListView: View {
     @Binding var headers: [HeaderEntry]
-    
+
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text("Edit Headers")
-                    .font(.headline)
-                    .padding(.leading)
-                
-                Spacer()
-                
-                Button(action: addHeader) {
-                    Image(systemName: "plus")
-                }
-                .padding(.trailing)
-            }
-            
+        VStack(alignment: .leading, spacing: 8) {
             Table(headers) {
-                TableColumn("Key") { header in
-                    HStack { // Wrapper HStack to detect hover on the entire row
-                        TextField("New Key", text: Binding(
-                            get: { header.key },
-                            set: {
-                                if let index = headers.firstIndex(where: { $0.id == header.id }) {
-                                    headers[index].key = $0
-                                }
-                                
-                            }
-                        ))
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .padding(.leading, 4)
-                    }
+                TableColumn("Header") { header in
+                    TextField("Name", text: binding(for: header, \.key))
+                        .textFieldStyle(.plain)
                 }
-                
                 TableColumn("Value") { header in
                     HStack {
-                        TextField("New Value", text: Binding(
-                            get: { header.value },
-                            set: {
-                                if let index = headers.firstIndex(where: { $0.id == header.id }) {
-                                    headers[index].value = $0
-                                }
-                            }
-                        ))
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .padding(.leading, 4)
-                        
-                        Button(action: {
-                            deleteHeader(header)
-                        }) {
-                            Image(systemName: "trash")
-                                .foregroundColor(.red)
-                                .help("Delete row")
+                        TextField("Value", text: binding(for: header, \.value))
+                            .textFieldStyle(.plain)
+                        Button {
+                            headers.removeAll { $0.id == header.id }
+                        } label: {
+                            Image(systemName: "minus.circle")
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.secondary)
+                        .help("Remove this header")
                     }
                 }
             }
-            .frame(minHeight: 150)
-            .background(Color(.windowBackgroundColor)) // Background color for the entire table
+            .frame(height: 220)
+
+            Button {
+                headers.append(HeaderEntry(key: "", value: "", isEnabled: true))
+            } label: {
+                Label("Add Header", systemImage: "plus")
+            }
         }
-        .padding()
     }
-    
-    func addHeader() {
-        headers.append(HeaderEntry(key: "", value: "", isEnabled: true))
-    }
-    
-    func deleteHeader(_ header: HeaderEntry) {
-        headers.removeAll { $0.id == header.id }
+
+    private func binding(for header: HeaderEntry, _ keyPath: WritableKeyPath<HeaderEntry, String>) -> Binding<String> {
+        Binding(
+            get: { headers.first { $0.id == header.id }?[keyPath: keyPath] ?? "" },
+            set: { value in
+                if let index = headers.firstIndex(where: { $0.id == header.id }) {
+                    headers[index][keyPath: keyPath] = value
+                }
+            }
+        )
     }
 }
 

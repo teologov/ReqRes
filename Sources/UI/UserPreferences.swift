@@ -5,7 +5,7 @@
 //  Created by OloApps on 15.06.2021.
 //  Stores preferences via property wrappers
 //
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.

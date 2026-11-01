@@ -2,9 +2,8 @@
 //  AddHostModal.swift
 //  ReqRes
 //
-//  Created by OloApps on 03.07.2023.
-//
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Created by OloApps on 14.06.2023.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,140 +18,167 @@
 //
 //  See LICENSE.md in the repository root for full license text.
 //
+//  Add a host filter. A sheet in snipperapp's small-form shape: title and
+//  context line, stacked caption-over-control groups, inline validation, and
+//  Cancel · Add with the system key equivalents.
+//
 
 import SwiftUI
-import Combine
+import Utils
 import XReqResCore
 
 struct AddHostModal: View {
-    @Environment(\.dismiss) var dismiss
-    @State private var hostName: String = ""
-    @State private var port: Int = 80
-    @State private var reqProtocol: RequestProtocolType = .HTTPS
-    @State private var showLimitAlert: Bool = false
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject private var licenseManager = LicenseManager.shared
-    
-    private static let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
-    
-    var disableForm: Bool {
-        let trimmedHost = hostName.trimmingCharacters(in: .whitespacesAndNewlines)
-       
-       
-        if trimmedHost.isEmpty {
-            return true
-        }
-       
-        return !trimmedHost.isValidHostname
-    }
-    
-    var body: some View {
-        Form {
-            Picker("Request Protocol", selection: $reqProtocol) {
-                ForEach(RequestProtocolType.allCases) { option in
-                    Text(option.rawValue)
-                }
-            }
-            .frame(width: 200)
-            TextField("Hostname", text: $hostName, prompt: Text("example.com"))
-                .disableAutocorrection(true)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-//            TextField("Port", value: $port, formatter: Self.formatter)
-//                .disableAutocorrection(true)
-//                .textFieldStyle(RoundedBorderTextFieldStyle())
-//                .disabled(true)
-        }
-        .padding()
-        
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
+    @ObservedObject private var appState = AppState.shared
 
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Cancel")
-                }
-                
-                Button {
-                    handleSave()
-                } label: {
-                    Text("Save")
-                }
-                .disabled(disableForm)
+    @State private var hostName = ""
+    @State private var reqProtocol: RequestProtocolType = .HTTPS
+    @State private var freeLimitReached = false
+    @State private var isSaving = false
+    @State private var errorMessage: String?
+    @FocusState private var hostFocused: Bool
+
+    var body: some View {
+        VStack(spacing: 16) {
+            VStack(spacing: 4) {
+                Text("New Host Filter")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("Traffic for this host gets its own entry in the sidebar.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
             }
-            .padding()
+
+            if freeLimitReached {
+                HStack(spacing: 10) {
+                    Image(systemName: "lock.fill")
+                        .foregroundStyle(.secondary)
+                    Text("The free version includes two host filters. Upgrade for unlimited filters.")
+                        .font(.system(size: 11))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                    // The sheet opens with Reached on this limit's row.
+                    Button("Upgrade…") {
+                        dismiss()
+                        PaywallPresentation.shared.show(.hostFilters)
+                    }
+                }
+                .padding(10)
+                .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 8))
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Protocol")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                Picker("Protocol", selection: $reqProtocol) {
+                    ForEach(RequestProtocolType.allCases) { Text($0.rawValue).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Hostname")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                TextField("api.example.com", text: $hostName)
+                    .textFieldStyle(.roundedBorder)
+                    .autocorrectionDisabled()
+                    .focused($hostFocused)
+                if let message = validationMessage {
+                    Text(message)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.orange)
+                } else if let errorMessage {
+                    Text(errorMessage)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.red)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack {
+                Button("Cancel") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Spacer()
+                Button("Add") { save() }
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(!canSave)
+            }
+            .padding(.top, 8)
         }
-        .alert("Free Version Limit", isPresented: $showLimitAlert) {
-            Button("Upgrade") {
-                // Add your upgrade navigation logic here
-                dismiss()
-                licenseManager.showPurchaseWindow()
-            }
-            Button("Cancel", role: .cancel) {
-                // Do nothing, just dismiss the alert
-            }
-        } message: {
-            Text("The free version is limited to 2 hosts. Please upgrade to add more hosts.")
+        .padding(24)
+        .frame(width: 340)
+        .onAppear {
+            hostFocused = true
+            checkFreeLimit()
         }
     }
-    
-    func handleSave() {
-        // Check license limits using bridge API
+
+    // MARK: - Derived
+
+    private var trimmedHost: String {
+        hostName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
+
+    private var alreadyAdded: Bool {
+        appState.hosts.contains { $0.host.lowercased() == trimmedHost }
+    }
+
+    private var validationMessage: String? {
+        guard !trimmedHost.isEmpty else { return nil }
+        if alreadyAdded { return "That host is already in the sidebar." }
+        if !trimmedHost.isValidHostname { return "Enter a hostname such as api.example.com — no scheme, port or path." }
+        return nil
+    }
+
+    private var canSave: Bool {
+        !freeLimitReached && !isSaving && !trimmedHost.isEmpty && trimmedHost.isValidHostname && !alreadyAdded
+    }
+
+    // MARK: - Actions
+
+    /// The free tier allows `FreeTier.hostFilters` host filters. Say so when
+    /// the form OPENS — and read the number from the same constant the
+    /// paywall quotes, so the two can never disagree.
+    private func checkFreeLimit() {
+        guard !licenseManager.isProUser() else { return }
+        Task {
+            let count = (try? await ReqResCoreModelBridge.findAllHosts().count) ?? 0
+            await MainActor.run { freeLimitReached = FreeTier.hostFilterLimitReached(existing: count) }
+        }
+    }
+
+    private func save() {
+        isSaving = true
+        errorMessage = nil
+        let newHost = HostCodable(
+            host: trimmedHost,
+            port: NSNumber(value: 80), // the port is not configurable yet
+            hostDbId: nil,
+            requestProtocol: reqProtocol.rawValue
+        )
         Task {
             do {
-                let currentHosts = try await ReqResCoreModelBridge.findAllHosts()
-                let currentHostCount = currentHosts.count
-                let isProUser = licenseManager.isProUser()
-                
-                if currentHostCount >= 2 && !isProUser {
-                    await MainActor.run {
-                        showLimitAlert = true
-                    }
-                } else {
-                    // Proceed with adding the host
-                    await createHost()
+                let saved = try await ReqResCoreModelBridge.saveHost(newHost)
+                let allHosts = try await ReqResCoreModelBridge.findAllHosts()
+                await MainActor.run {
+                    AppState.shared.hosts.append(saved)
+                    AppController.shared.notifyExtension(message: ServerBusMessage(
+                        action: .allHostsChanged,
+                        payload: ["data": allHosts]
+                    ))
+                    dismiss()
                 }
             } catch {
-                AppLog.shared.error("Error checking host count: \(error)")
+                AppLog.shared.error("Error creating host: \(error)")
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    isSaving = false
+                }
             }
-        }
-    }
-    
-    func createHost() async {
-        do {
-            let newHost = HostCodable(
-                host: hostName.trimmingCharacters(in: .whitespacesAndNewlines),
-                port: NSNumber(value: 80), // hardcode the port for now
-                hostDbId: nil, // New host, so no database ID yet
-                requestProtocol: reqProtocol.rawValue
-            )
-            
-            // Save using bridge API
-            let savedHost = try await ReqResCoreModelBridge.saveHost(newHost)
-            AppState.shared.hosts.append(savedHost)
-            
-            let allHosts = try await ReqResCoreModelBridge.findAllHosts()
-            
-            await MainActor.run {
-                AppController.shared.notifyExtension(message: ServerBusMessage(
-                    action: .allHostsChanged,
-                    payload: [
-                        "data": allHosts
-                    ]
-                ))
-                
-                dismiss()
-            }
-        } catch {
-            // Handle error
-            AppLog.shared.error("Error creating host: \(error)")
         }
     }
 }
-

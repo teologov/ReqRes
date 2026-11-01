@@ -6,7 +6,7 @@ FSL-1.1-ALv2
 
 ## Notice
 
-Copyright 2025 OloApps
+Copyright 2025–2026 Andrey Teologov
 
 ## Terms and Conditions
 

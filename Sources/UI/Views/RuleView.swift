@@ -4,7 +4,7 @@
 //
 //  Created by OloApps on 04.07.2023.
 //
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,12 +21,16 @@
 //
 
 import SwiftUI
+import MCPKit
 import XReqResCore
 
 struct RuleView: View {
     var rule: RuleCodable
     var ruleHost: HostCodable?
     var selectedHost: HostCodable?
+    /// The rule's Map Local file could not be read at the last rules push (F24):
+    /// a matching request gets 500 and a note until the file is chosen again.
+    var fileUnreadable: Bool = false
     
     var body: some View {
         HStack {
@@ -35,7 +39,7 @@ struct RuleView: View {
                     Image(systemName: "arrow.left.and.right.circle")
                         .renderingMode(.template)
                         .foregroundColor(.blue)
-                    Text(rule.reqMethod)
+                    Text(RuleMethod.displayName(rule.reqMethod))
                         .font(.body)
                         .fontWeight(.medium)
                         .truncationMode(.tail)
@@ -66,6 +70,14 @@ struct RuleView: View {
                     ))
                     .toggleStyle(.switch)
                     .controlSize(.small)
+                    if fileUnreadable {
+                        Label(MapLocalUnreadable.listRowLabel, systemImage: "exclamationmark.triangle.fill")
+                            .font(.callout)
+                            .foregroundStyle(.orange)
+                            .lineLimit(1)
+                            .help(MapLocalUnreadable.listRowHelp(fileName: (rule.rspPath as NSString).lastPathComponent))
+                            .accessibilityLabel(MapLocalUnreadable.listRowHelp(fileName: (rule.rspPath as NSString).lastPathComponent))
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 

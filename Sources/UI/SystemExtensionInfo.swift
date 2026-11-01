@@ -4,7 +4,7 @@
 //
 //  Created by OloApps on 12.05.2021.
 //
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.

@@ -5,7 +5,7 @@
 //  Created by OloApps on 6/17/24.
 //  Inspired by https://github.com/softnetics/dotlocal/blob/792f44fcb9fbcc291d6b1f9e2fd2523c672e6871/DotLocal/SettingsView.swift#L99
 //
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,187 +20,205 @@
 //
 //  See LICENSE.md in the repository root for full license text.
 //
+//  Settings ▸ Certificate (shell step S4). Since 1.1.0 the CA is this
+//  install's own (core step C8), so the pane says so — where the key is kept
+//  and where it goes, in `CertificateAuthorityPresentation.custody`, the same
+//  sentence Help prints — shows its SHA-256 the way Keychain Access does, and
+//  keeps a banner with the Replace Old Certificate action while an older
+//  "ReqRes CA" is in the keychain (the launch sheet's decline leaves it here).
+//  State comes from `CertificateAuthorityService`, read off main; the layout
+//  probe seeds it (`REQRES_UI_PROBE=certificate…`).
+//
+//  The ? at the bottom opens `CertificateExplanationSheet` (shell step S12):
+//  what this Mac's certificate is, its details and how to remove it by hand. It
+//  says nothing about the 1.0.x certificate: the banner above and the launch
+//  sheet are what tell a user who still has that one.
+//
+//  Install and Trust push the CA state to a running extension, which then
+//  intercepts NEW connections — there is no capture restart any more.
+//
 
 import SwiftUI
 import Foundation
 import SecurityInterface
-import Settings
+import MCPKit
 import Utils
 import XReqResCore
 
 struct CACertificateModal: View {
-    @State var rootCertificate: CertHelper.Certificate?
-    @State private var window: NSWindow?
-    
+    typealias Copy = CertificateAuthorityPresentation
+
+    @ObservedObject private var service = CertificateAuthorityService.shared
+    @State private var errorTitle = ""
+    @State private var errorMessage: String?
+    /// The ? button's sheet (shell step S12). The layout probe opens it
+    /// (`REQRES_UI_PROBE=certificate…-explained`).
+    @State private var showingExplanation = CACertificateModal.probeOpensExplanation
+
+    #if DEBUG
+    static var probeOpensExplanation: Bool {
+        ProcessInfo.processInfo.environment["REQRES_UI_PROBE"]?.hasSuffix("-explained") == true
+    }
+    #else
+    static let probeOpensExplanation = false
+    #endif
+
     var body: some View {
-        VStack(alignment: .center) {
-            Settings.Section(title: "Root CA:") {
-                if let rootCertificate = rootCertificate, let window = window {
-                    CertificateView(
-                        certificate: rootCertificate,
-                        window: window,
-                        reload: onAppear
-                    )
+        Form {
+            if let banner = Copy.banner(for: service.outdated) {
+                Section {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label {
+                            Text(banner).fixedSize(horizontal: false, vertical: true)
+                        } icon: {
+                            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+                        }
+                        .font(.system(size: 12))
+                        HStack(alignment: .center, spacing: 8) {
+                            Text(Copy.sheetPasswordNote)
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Spacer(minLength: 12)
+                            if service.isReplacing {
+                                ProgressView()
+                                    .controlSize(.small)
+                                    .accessibilityLabel("Replacing the certificate")
+                            }
+                            Button(MCPCaptureEnvironment.replaceOldCertificateButton, action: replaceOutdated)
+                                .disabled(service.isReplacing)
+                        }
+                    }
                 }
             }
-            Spacer() // Push content to the top
+
+            Section("ReqRes CA") {
+                LabeledContent("Keychain") {
+                    HStack(spacing: 10) {
+                        stateLabel(service.installed, on: "Installed", off: "Not installed")
+                        // Disabled until the first refresh has read the CA:
+                        // a click before it used to report "could not prepare
+                        // this Mac's certificate" about a CA that was fine.
+                        Button(Copy.installButton) { run { await service.installCurrent() } }
+                            .disabled(service.installed || service.caUnavailable || service.fingerprint == nil)
+                    }
+                }
+                LabeledContent("Trust") {
+                    HStack(spacing: 10) {
+                        stateLabel(service.trusted, on: "Trusted", off: "Not trusted")
+                        Button(Copy.trustButton) { run { await service.trustCurrent() } }
+                            .disabled(!service.installed || service.trusted || service.fingerprint == nil)
+                    }
+                }
+                if let fingerprint = service.fingerprint {
+                    // Its own row, label above value: 32 hex pairs do not fit
+                    // beside a label, and Keychain Access prints them this way.
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("SHA-256")
+                        Text(Copy.displayFingerprintLines(fingerprint).joined(separator: "\n"))
+                            .font(.system(size: 11, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                            .textSelection(.enabled)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("SHA-256 fingerprint")
+                    .accessibilityValue(fingerprint)
+                }
+                Text(Copy.summary(for: service.status))
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack {
+                    Spacer()
+                    Button("Certificate Details…", action: showDetails)
+                        .disabled(service.certificate == nil)
+                }
+            }
+
+            Section {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(Copy.custody)
+                    Text(Copy.removalAdvice)
+                        .foregroundStyle(.secondary)
+                }
+                .font(.system(size: 11))
+                .fixedSize(horizontal: false, vertical: true)
+            } header: {
+                Text("Where its private key is")
+            } footer: {
+                // Shell step S12: the standard help button, bottom trailing
+                // under the last group — where System Settings puts it. It
+                // opens a SHEET (see CertificateExplanationSheet for why).
+                HStack {
+                    Spacer()
+                    HelpLink { showingExplanation = true }
+                        .help(CertificateAuthorityExplanation.title)
+                        .accessibilityLabel(CertificateAuthorityExplanation.title)
+                }
+            }
         }
-        .onAppear(perform: onAppear)
-        .background(WindowAccessor(window: $window))
-        .frame(maxWidth: .infinity, maxHeight: .infinity) // Fill available space
+        .formStyle(.grouped)
+        .sheet(isPresented: $showingExplanation) {
+            CertificateExplanationSheet(certificateDER: service.certificateDER)
+        }
+        .task { await service.refresh() }
+        .alert(errorTitle, isPresented: Binding(
+            get: { errorMessage != nil },
+            set: { if !$0 { errorMessage = nil } }
+        )) {
+            Button("OK") {}
+        } message: {
+            Text(errorMessage ?? "")
+        }
     }
-    
-    func onAppear() {
+
+    /// Text AND symbol, never colour alone.
+    private func stateLabel(_ isOn: Bool, on: String, off: String) -> some View {
+        Label {
+            Text(isOn ? on : off)
+        } icon: {
+            Image(systemName: isOn ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .foregroundStyle(isOn ? .green : .red)
+        }
+        .font(.system(size: 12))
+    }
+
+    private func run(_ action: @escaping () async -> CertificateAuthorityService.Outcome) {
         Task {
-           await loadCertificate()
+            if case .failed(let message) = await action() {
+                errorTitle = "The ReqRes certificate could not be changed"
+                errorMessage = message
+            }
         }
     }
-    
-    
-    private func loadCertificate() async {
-        do {
-            rootCertificate = try await CertHelper.getRootCertificate()
-        } catch {
-            AppLog.shared.error("failed to load certificate: \(error.localizedDescription, privacy: .public)")
+
+    private func replaceOutdated() {
+        Task {
+            switch await service.replaceOutdated() {
+            case .done:
+                break
+            case .cancelled:
+                errorTitle = "Not finished"
+                errorMessage = Copy.sheetCancelledNote
+            case .failed(let message):
+                errorTitle = "Could not replace the old ReqRes CA"
+                errorMessage = message
+            }
+        }
+    }
+
+    private func showDetails() {
+        guard let certificate = service.certificate else { return }
+        if let window = NSApp.keyWindow {
+            SFCertificatePanel.shared().beginSheet(for: window, modalDelegate: nil, didEnd: nil, contextInfo: nil,
+                                                   certificates: [certificate], showGroup: false)
+        } else {
+            SFCertificatePanel.shared().runModal(forCertificates: [certificate], showGroup: false)
         }
     }
 }
 
 #Preview {
-    CACertificateModal().frame(minWidth: 375, minHeight: 150, alignment: .topLeading)
-}
-
-struct CertificateView: View {
-    @State private var didError = false
-    @State private var errorTitle = ""
-    @State private var errorMessage = ""
-    @State private var certificateInstalledInKeychain: Bool = false
-    
-    var certificate: CertHelper.Certificate
-    var window: NSWindow
-    var reload: () -> Void
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Grid(alignment: .leading, horizontalSpacing: 20, verticalSpacing: 10) {
-                GridRow {
-                    Button("Install CA certificate", action: installCertificate)
-                        .disabled(self.certificateInstalledInKeychain)
-
-                    if (self.certificateInstalledInKeychain) {
-                        (Text(Image(systemName: "checkmark.circle.fill"))+Text(" Installed"))
-                            .foregroundStyle(.green)
-                            .font(.system(size: 12))
-                    }
-                    if (!self.certificateInstalledInKeychain) {
-                        (Text(Image(systemName: "xmark.circle.fill"))+Text(" Not installed"))
-                            .foregroundStyle(.red)
-                            .font(.system(size: 12))
-                    }
-                }
-                GridRow {
-                    Button(action: {
-                        let status = SecTrustSettingsSetTrustSettings(certificate.secCertificate, .user, [
-                            [kSecTrustSettingsPolicy: SecPolicyCreateBasicX509()],
-                            [kSecTrustSettingsPolicy: SecPolicyCreateSSL(true, nil)],
-                        ] as CFTypeRef)
-                        
-                        guard status == errSecSuccess || status == errAuthorizationCanceled else {
-                            errorTitle = "Failed to set trust settings for ReqRes CA certificate"
-                            errorMessage = "\(status): " + (SecCopyErrorMessageString(status, nil)! as String)
-                            didError = true
-                            return
-                        }
-                        reload()
-                        // programmatically restart Network Extension, if certificate was trusted,
-                        // but user has the extension running
-                        // might be better to wait until the manager.connection.status is disconnected
-                        if let manager = VPNManager.shared.manager {
-                            if manager.connection.status == .connecting ||  manager.connection.status == .connected {
-                                VPNManager.shared.stopVPNTunnel()
-                                // restart tunnel in 2 seconds
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    AppController.shared.toggleVPNTunnel()
-                                }
-                            }
-                        }
-                    }, label: {
-                        Text("Trust")
-                    })
-                    .disabled(!self.certificateInstalledInKeychain || certificate.trusted)
-                    
-                    if certificate.trusted {
-                        (Text(Image(systemName: "checkmark.circle.fill"))+Text(" Trusted"))
-                            .foregroundStyle(.green)
-                            .font(.system(size: 12))
-                    } else {
-                        (Text(Image(systemName: "xmark.circle.fill"))+Text(" Not trusted"))
-                            .foregroundStyle(.red)
-                            .font(.system(size: 12))
-                    }
-                }
-                GridRow {
-                    Button(action: {
-                        SFCertificatePanel.shared().beginSheet(for: window, modalDelegate: nil, didEnd: nil, contextInfo: nil, certificates: [certificate.secCertificate], showGroup: false)
-                    }, label: {
-                        Text("Certificate Details")
-                    })
-                    .disabled(!self.certificateInstalledInKeychain)
-                }
-            }
-            .padding([.leading], 10)
-            .alert(
-                errorTitle,
-                isPresented: $didError,
-                presenting: errorMessage
-            ) { _ in
-                Button("OK") {}
-            } message: { message in
-                Text(message)
-            }
-        }
-        .onAppear(perform: onAppear)
-    }
-    
-    func onAppear() {
-        self.certificateInstalledInKeychain = CertHelper.getInstalledCertificate() != nil
-    }
-    
-    private func installCertificate() {
-        let status = SecItemAdd([
-            kSecClass as String: kSecClassCertificate,
-            kSecValueRef as String: certificate.secCertificate
-        ] as CFDictionary, nil)
-        guard status == errSecSuccess || status == errSecDuplicateItem else {
-            errorTitle = "Failed to add certificate to Keychain"
-            errorMessage = "\(status): " + (SecCopyErrorMessageString(status, nil)! as String)
-            didError = true
-            return
-        }
-        self.certificateInstalledInKeychain = true;
-    }
-}
-
-struct WindowAccessor: NSViewRepresentable {
-    @Binding var window: NSWindow?
-
-    func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-
-        // Use a repeating timer to check for the window
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            if let nsWindow = view.window {
-                DispatchQueue.main.async {
-                    self.window = nsWindow
-                    timer.invalidate() // Stop the timer once the window is assigned
-                }
-            }
-        }
-
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-        // No changes needed in updateNSView for this approach
-    }
+    CACertificateModal().frame(width: 700, height: 620)
 }

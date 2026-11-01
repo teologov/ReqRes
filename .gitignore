@@ -68,3 +68,21 @@ fastlane/test_output
 
 archives/*
 .DS_Store
+# Local notes and tool configuration, never published
+.ai/
+.claude/
+.agents/
+CLAUDE.md
+AGENTS.md
+skills-lock.json
+
+# Secrets — NEVER commit. This repo is public.
+.env
+.env.*
+!.env.template
+
+# Xcode writes an Xcode Cloud manifest into the project on its own; there is no CI.
+**/xcshareddata/xcodecloud/
+
+# Release disk images (Scripts/make-dmg.sh) go to GitHub Releases, never into the repository.
+*.dmg

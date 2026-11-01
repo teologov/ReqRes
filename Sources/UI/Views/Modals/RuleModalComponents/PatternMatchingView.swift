@@ -2,9 +2,7 @@
 //  PatternMatchingView.swift
 //  ReqRes
 //
-//  Created by OloApps on 11/7/24.
-//
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,144 +17,118 @@
 //
 //  See LICENSE.md in the repository root for full license text.
 //
+//  The pattern tester: a popover on the `?` beside the override form's URL
+//  field. It tests the rule's REAL path and match type through
+//  `OverridePattern`, which reproduces what the proxy does — the host is put
+//  in front of the pattern, and the query is matched on both schemes (plain HTTP
+//  too, since core C5).
+//  (The first version was a separate window with its own pattern fields, so
+//  what it tested had nothing to do with what the form would save.)
+//
 
 import SwiftUI
+import MCPKit
 import XReqResCore
 
-struct PatternMatchingView: View {
-    @State private var selectedRule: String = "Wildcard"
-    @State private var pattern: String = ""
-    @State private var url: String = "https://mysite.com/dashboard"
-    @State private var isMatch: Bool = false
-    
+struct PatternTesterPopover: View {
+    /// The rule's path, exactly as it will be stored.
+    let path: String
+    /// The host the rule is scoped to; the proxy puts it in front of the path.
+    let scheme: String
+    let host: String?
+    let matchType: UrlMatcherType
+
+    @State private var url = ""
+
+    private var proxyPattern: String {
+        OverridePattern.displayed(scheme: scheme, host: host, path: path)
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            // Header Section
-            Text("Pattern Matching Rules")
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(.bottom, 5)
-            
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Test Your Pattern")
-                    .font(.headline)
-                
-                // Pattern Input and Matching Rule Picker with 70% / 30% Widths
-                GeometryReader { geometry in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Pattern")
-                                .font(.subheadline)
-                            TextField("https://mysite.com/path*", text: $pattern)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Matching Rule")
-                                .font(.subheadline)
-                                .padding(.leading, 10)
-                            Picker("", selection: $selectedRule) {
-                                Text("Wildcard").tag("Wildcard")
-                                Text("Regex").tag("Regex")
-                            }
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(width: geometry.size.width * 0.3, height: 35, alignment: .leading) // 30% width
-                        }
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Test the Pattern")
+                .font(.system(size: 13, weight: .semibold))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(host == nil ? (matchType == .REGEX ? "Regex" : "Wildcard pattern") : "ReqRes matches")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                Text(path.isEmpty ? "Type a pattern in the URL field first." : proxyPattern)
+                    .font(.system(size: 12, design: path.isEmpty ? .default : .monospaced))
+                    .foregroundStyle(path.isEmpty ? .secondary : .primary)
+                    .lineLimit(2)
+                    .truncationMode(.middle)
+                    .textSelection(.enabled)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Try a URL")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                TextField("https://api.example.com/users?id=1", text: $url)
+                    .textFieldStyle(.roundedBorder)
+                    .autocorrectionDisabled()
+                if !url.trimmingCharacters(in: .whitespaces).isEmpty, !path.isEmpty {
+                    HStack(spacing: 6) {
+                        Image(systemName: matches ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundStyle(matches ? .green : .red)
+                        Text(matches ? "Matches" : "Does not match")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .padding(.top, 2)
+                }
+            }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(matchType == .REGEX ? "Regex" : "Wildcard")
+                    .font(.system(size: 11, weight: .semibold))
+                Text(matchType == .REGEX
+                     ? "Matched against the whole URL — ReqRes puts the host in front of your pattern, so start it at the path and do NOT anchor it with ^. Characters that are also URL syntax (? . /) need escaping."
+                     : "* matches any run of characters, including none. Everything else matches literally, and the pattern must cover the query too — end it with * to match /search?q=…")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                ForEach(examples, id: \.0) { example in
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(example.0)
+                            .font(.system(size: 10, design: .monospaced))
+                        Text(example.1)
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .frame(height: 60) // Height to contain both elements
-                
-                // URL Input
-                VStack(alignment: .leading) {
-                    Text("URL")
-                        .font(.subheadline)
-                    TextField("Enter URL", text: $url)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.bottom, 5)
-                }
-                
-                HStack {
-                    Spacer()
-                    Text(isMatch ? "✅ Match" : "❌ No Match")
-                        .font(.headline)
-                        .foregroundColor(isMatch ? .green : .red)
-                    Spacer()
-                }
+                .padding(.top, 2)
             }
-            .padding()
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(NSColor.windowBackgroundColor)))
-            
-            // Description of Wildcard
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Wildcard")
-                    .font(.headline)
-                Text("Supports a single wildcard character (*) to match any character zero or more times.")
-                    .font(.subheadline)
-                
-                // Wildcard Examples
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Examples:")
-                        .fontWeight(.semibold)
-                    Text("*.mysite.com/path — matches any subdomain of mysite.com")
-                    Text("mysite.com/api/*/ — matches any API call")
-                    Text("mysite.com/filter?* — ignores query parameters")
-                }
-                .font(.caption)
-            }
-            
-            // Regex Description
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Regex")
-                    .font(.headline)
-                Text("Supports full regex syntax. Be cautious with characters that overlap with URL syntax, as they may need escaping.")
-                    .font(.subheadline)
-                    .fixedSize(horizontal: false, vertical: true) // Ensures line breaks
-                
-                // Regex Examples
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Examples:")
-                        .fontWeight(.semibold)
-                    Text("^.*\\.mysite\\.com/path$ — matches any subdomain of mysite.com")
-                    Text("^mysite\\.com/api/.*/$ — matches any API call")
-                    Text("^mysite\\.com/filter\\?.*$ — ignores query parameters")
-                }
-                .font(.caption)
-            }
-            
-            Spacer()
         }
-        .padding()
-        .onChange(of: pattern) { _, _ in checkMatch() }
-        .onChange(of: url) { _, _ in checkMatch() }
+        .padding(16)
+        .frame(width: 380)
     }
-    
-    // Updated match checker function
-    func checkMatch() {
-        if selectedRule == "Wildcard" {
-            // Convert wildcard pattern to regex-compatible pattern
-            let regexPattern = NSRegularExpression.escapedPattern(for: pattern).replacingOccurrences(of: "\\*", with: ".*")
-            isMatch = matchesRegex(regexPattern: "^" + regexPattern + "$", in: url)
-        } else if selectedRule == "Regex" {
-            // Directly use the regex pattern provided by the user
-            isMatch = matchesRegex(regexPattern: pattern, in: url)
+
+    private var examples: [(String, String)] {
+        switch matchType {
+        case .WILDCARD:
+            return [
+                ("/api/*", "everything under /api/"),
+                ("/items?*", "any query on /items"),
+                ("/*", "every request to this host"),
+            ]
+        case .REGEX:
+            return [
+                ("/api/.*$", "everything under /api/"),
+                ("/items\\?.*$", "any query on /items"),
+                ("/users/\\d+$", "a numeric user id"),
+            ]
         }
     }
-    
-    // Helper function to perform regex matching
-    func matchesRegex(regexPattern: String, in text: String) -> Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: regexPattern)
-            let range = NSRange(location: 0, length: text.utf16.count)
-            return regex.firstMatch(in: text, options: [], range: range) != nil
-        } catch {
-            AppLog.shared.error("Invalid regex: \(error.localizedDescription)")
-            return false
-        }
+
+    /// The proxy's own algorithm — see `OverridePattern.matches`.
+    private var matches: Bool {
+        OverridePattern.matches(url: url, path: path, isRegex: matchType == .REGEX)
     }
 }
 
-struct PatternMatchingView_Previews: PreviewProvider {
-    static var previews: some View {
-        PatternMatchingView()
-    }
+#Preview {
+    PatternTesterPopover(path: "/users?*", scheme: "https", host: "api.example.com", matchType: .WILDCARD)
 }

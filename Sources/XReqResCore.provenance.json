@@ -1,0 +1,13 @@
+{
+  "note": "Written by Scripts/sync-core.sh. Records which XReqResCore commit produced the committed binary — do not edit by hand.",
+  "coreCommit": "6d888526a1c8a2493e8c9d03a47cb51996140f4f",
+  "coreCommitShort": "6d88852",
+  "coreBranch": "1.1.0",
+  "coreSubject": "rebuild the xcframework with Xcode 27.0 from cc9d7e3: the production entitlement keys from the 2026-11-01 ceremony (keySetName \"production\"; the three keys in both slices, no development key), the first binary that verifies what reqresapp.com signs; production entitlement keys; public API diff -0 +0 against the 5d0b6aa build; NIOContractTests 190, 0 failures against it",
+  "coreTreeDirty": false,
+  "coreCommitPushed": false,
+  "entitlementKeys": "production",
+  "builtAt": "2026-11-01T20:54:07Z",
+  "builtWith": "Xcode 27.0",
+  "frameworkSizeBytes": 27258880
+}

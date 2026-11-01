@@ -1,2 +1,12 @@
 DEVELOPMENT_TEAM =
 SENTRY_DSN =
+
+// Which certificate signs the app and the extension.
+//
+// The plain name is right for most people. If your keychain holds SEVERAL valid
+// "Developer ID Application" certificates, the name is ambiguous and Xcode may
+// choose the one that is NOT in your provisioning profile — which fails with
+// "Provisioning profile doesn't include signing certificate". In that case put
+// the exact 40-hex SHA-1 here instead:
+//     security find-identity -v -p codesigning
+REQRES_SIGN_IDENTITY = Developer ID Application

@@ -4,7 +4,7 @@
 //
 //  Created by OloApps on 2/12/25.
 //
-//  Copyright © 2025 OloApps. All rights reserved.
+//  Copyright © 2025 Andrey Teologov. All rights reserved.
 //
 //  Licensed under the Functional Source License, Version 1.1 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 //  See LICENSE.md in the repository root for full license text.
 //
 
+import MCPKit
 import SwiftUI
 import XReqResCore
 
@@ -93,16 +94,30 @@ struct NetworkMetricsView: View {
     private var downloadDuration: Double = 0
     
     private var timelineStart: Double { session.startTime.doubleValue }
+
+    /// False for an exchange that rode a connection an earlier request
+    /// opened: it had no DNS, TCP or TLS of its own, and the pane says so in
+    /// words instead of drawing three bars of nothing.
+    private var showsConnectionSetup: Bool {
+        RecordedExchangeCopy.showsConnectionSetup(reused: session.connectionReused, exchangeIndex: session.exchangeIndex)
+    }
     
     init(session: SessionCodable) {
         self.session = session
         
         // Calculate phases duration
-        queuedDuration = calculateDuration(session.startTime.doubleValue, session.connectTime.doubleValue)
-        dnsDuration = calculateDuration(session.connectTime.doubleValue, session.connectedTime.doubleValue)
-        tcpDuration = calculateDuration(session.connectedTime.doubleValue, session.handshakeEndTime.doubleValue)
-        secureDuration = session.scheme == "https" ?
-            calculateDuration(session.handshakeEndTime.doubleValue, session.reqStartTime.doubleValue) : 0
+        queuedDuration = calculateDuration(session.startTime.doubleValue, session.connectStartTime.doubleValue)
+        // A reused connection's setup phases are zero-length by construction
+        // (core C2.7 anchors them at the exchange's own start); its "Secure"
+        // span would be the microseconds between that start and the request
+        // head, which is not a handshake. None of the three are drawn for it
+        // (`RecordedExchangeCopy.showsConnectionSetup`), so none are summed.
+        if showsConnectionSetup {
+            dnsDuration = calculateDuration(session.connectStartTime.doubleValue, session.connectEndTime.doubleValue)
+            tcpDuration = calculateDuration(session.connectEndTime.doubleValue, session.tlsEndTime.doubleValue)
+            secureDuration = session.scheme == "https" ?
+                calculateDuration(session.tlsEndTime.doubleValue, session.reqStartTime.doubleValue) : 0
+        }
         requestDuration = calculateDuration(session.reqStartTime.doubleValue, session.rspStartTime.doubleValue)
         waitingDuration = calculateDuration(session.rspStartTime.doubleValue, session.downloadStartTime.doubleValue)
         downloadDuration = calculateDuration(session.downloadStartTime.doubleValue, session.downloadEndTime.doubleValue)
@@ -139,7 +154,112 @@ struct NetworkMetricsView: View {
         formatter.countStyle = .file
         return formatter.string(fromByteCount: bytes)
     }
-    
+
+    /// Where the connection went (destination-map UX spec §5.5): the address
+    /// the extension recorded and the country it resolves to, in
+    /// `TimelineItem`'s label typography — `104.18.32.7 · Germany`,
+    /// `127.0.0.1 · This Mac`, `— · Unknown` when the core recorded no
+    /// address. The address is selectable; the country is the resolver's
+    /// cached answer, the same one the traffic list filters by.
+    private var serverRow: some View {
+        let destination = DestinationResolver.shared.destination(for: session)
+        return HStack(spacing: 12) {
+            Text("Server")
+                .frame(width: 70, alignment: .leading)
+                .foregroundColor(.secondary)
+                .font(.system(.callout, design: .monospaced))
+
+            HStack(spacing: 6) {
+                Text(session.remoteAddressText ?? "—")
+                    .font(.system(.callout, design: .monospaced))
+                    .textSelection(.enabled)
+                Text("·")
+                    .foregroundColor(.secondary)
+                Text(CountryPresentation.title(for: destination))
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+            }
+            .help(DestinationCopy.classDescription(destination, tableFailure: DestinationResolver.shared.tableFailureReason) ?? DestinationCopy.whatACountryMeans)
+
+            Spacer(minLength: 0)
+        }
+    }
+
+    /// What the row spoke (protocol-engine doc §S9): HTTP/1.1, HTTP/2, a
+    /// WebSocket after its upgrade — a row, not a table column, because the
+    /// table has no width to spare. The label is text (and an HTTP/2 row's
+    /// symbol says "several streams on one connection"); the caption is
+    /// `SessionProtocolPresentation`'s, so an agent reads the same words.
+    private var protocolRow: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text("Protocol")
+                .frame(width: 70, alignment: .leading)
+                .foregroundColor(.secondary)
+                .font(.system(.callout, design: .monospaced))
+            VStack(alignment: .leading, spacing: 2) {
+                Label {
+                    Text(verbatim: session.protocolLabel)
+                        .font(.system(.callout, design: .monospaced))
+                        .textSelection(.enabled)
+                } icon: {
+                    Image(systemName: Self.symbolName(session.sessionProtocol))
+                        .foregroundColor(.secondary)
+                }
+                .font(.callout)
+                if let caption = session.protocolCaption {
+                    Text(caption)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Protocol: \(session.protocolLabel)")
+    }
+
+    static func symbolName(_ proto: SessionProtocol?) -> String {
+        switch proto {
+        case .http2: return "square.stack.3d.up"
+        case .webSocket: return "arrow.left.arrow.right"
+        case .relay: return "lock.slash"
+        case .http1: return "arrow.right"
+        case nil: return "questionmark.circle"
+        }
+    }
+
+    /// "40 MB (16 MB kept)" when the capture kept only part of the body — the
+    /// transfer size is the whole body as sent; what the Body tab shows is
+    /// not. Both numbers in the 1024-based units the 16 MB limit is stated
+    /// in, so they add up with the Body tab's notice; a whole body keeps the
+    /// pane's usual formatter.
+    private func loadText(_ total: Int64, notRetained: Int64) -> String {
+        guard notRetained > 0 else { return formatBytes(total) }
+        return "\(RecordedExchangeCopy.binaryBytes(total)) (\(RecordedExchangeCopy.binaryBytes(max(0, total - notRetained))) kept)"
+    }
+
+    /// In place of the DNS / TCP / Secure bars for a reused connection: the
+    /// label ("Reused connection · request 3 on it") and why nothing is drawn.
+    private func reusedConnectionRow(_ label: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text("Setup")
+                .frame(width: 70, alignment: .leading)
+                .foregroundColor(.secondary)
+                .font(.system(.callout, design: .monospaced))
+            VStack(alignment: .leading, spacing: 2) {
+                Label(label, systemImage: "arrow.triangle.2.circlepath")
+                    .font(.callout)
+                Text(RecordedExchangeCopy.reusedExplanation)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
@@ -150,12 +270,12 @@ struct NetworkMetricsView: View {
                 HStack(spacing: 32) {
                     HStack(spacing: 8) {
                         Image(systemName: "arrow.up.circle")
-                        Text("Upload: \(formatBytes(session.uploadTraffic.int64Value))")
+                        Text("Upload: " + loadText(session.requestBytes.int64Value, notRetained: session.reqBodyTruncatedBytes))
                             .foregroundColor(.secondary)
                     }
                     HStack(spacing: 8) {
                         Image(systemName: "arrow.down.circle")
-                        Text("Download: \(formatBytes(session.downloadFlow.int64Value))")
+                        Text("Download: " + loadText(session.responseBytes.int64Value, notRetained: session.rspBodyTruncatedBytes))
                             .foregroundColor(.secondary)
                     }
                 }
@@ -174,34 +294,42 @@ struct NetworkMetricsView: View {
                 Text("Connection")
                     .font(.headline)
                     .padding(.top, 8)
-                
+
+                protocolRow
+
+                serverRow
+
                 let dnsOffset = 0.0
-                TimelineItem(
-                    label: "DNS",
-                    duration: formatDuration(dnsDuration),
-                    color: Color(Palette.networkDNS),
-                    startOffset: calculateOffset(dnsOffset),
-                    progress: calculateProgress(dnsDuration)
-                )
-                
                 let tcpOffset = dnsOffset + dnsDuration
-                TimelineItem(
-                    label: "TCP",
-                    duration: formatDuration(tcpDuration),
-                    color: Color(Palette.networkTCP),
-                    startOffset: calculateOffset(tcpOffset),
-                    progress: calculateProgress(tcpDuration)
-                )
-                
-                if session.scheme == "https" {
-                    let secureOffset = tcpOffset + tcpDuration
+                if let reused = session.reusedConnectionLabel {
+                    reusedConnectionRow(reused)
+                } else {
                     TimelineItem(
-                        label: "Secure",
-                        duration: formatDuration(secureDuration),
-                        color: Color(Palette.networkSecure),
-                        startOffset: calculateOffset(secureOffset),
-                        progress: calculateProgress(secureDuration)
+                        label: "DNS",
+                        duration: formatDuration(dnsDuration),
+                        color: Color(Palette.networkDNS),
+                        startOffset: calculateOffset(dnsOffset),
+                        progress: calculateProgress(dnsDuration)
                     )
+
+                    TimelineItem(
+                        label: "TCP",
+                        duration: formatDuration(tcpDuration),
+                        color: Color(Palette.networkTCP),
+                        startOffset: calculateOffset(tcpOffset),
+                        progress: calculateProgress(tcpDuration)
+                    )
+
+                    if session.scheme == "https" {
+                        let secureOffset = tcpOffset + tcpDuration
+                        TimelineItem(
+                            label: "Secure",
+                            duration: formatDuration(secureDuration),
+                            color: Color(Palette.networkSecure),
+                            startOffset: calculateOffset(secureOffset),
+                            progress: calculateProgress(secureDuration)
+                        )
+                    }
                 }
                 
                 Text("Response")

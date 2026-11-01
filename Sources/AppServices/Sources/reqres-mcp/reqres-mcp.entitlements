@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Sandboxed and a member of the app group: that is what lets the helper
+	     read the handshake the app writes into the group container. An
+	     unsandboxed helper is refused by TCC (Group Containers are protected). -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>ZUP9ZNBCHM.com.oloapps.ReqRes</string>
+	</array>
+	<!-- The bridge is a loopback HTTP listener inside the running app. -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+</dict>
+</plist>

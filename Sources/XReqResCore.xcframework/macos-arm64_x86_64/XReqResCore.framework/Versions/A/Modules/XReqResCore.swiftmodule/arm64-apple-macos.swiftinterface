@@ -1,12 +1,12 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.1.2 effective-5.10 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)
-// swift-module-flags: -target arm64-apple-macos14.6 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name XReqResCore
-// swift-module-flags-ignorable:  -interface-compiler-version 6.1.2
+// swift-compiler-version: Apple Swift version 6.4 effective-5.10 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)
+// swift-module-flags: -target arm64-apple-macos14.6 -enable-objc-interop -enable-library-evolution -language-mode 5 -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name XReqResCore
+// swift-module-flags-ignorable:  -formal-cxx-interoperability-mode=off -interface-compiler-version 6.4
 import AppKit
 import Combine
 import Compression
+import CryptoKit
 import Foundation
-import Network
 import Security
 import SecurityInterface
 import Swift
@@ -16,412 +16,58 @@ import _StringProcessing
 import _SwiftConcurrencyShims
 import os
 import zlib
-@_hasMissingDesignatedInitializers final public class CertUtilsOpenSSL {
-  public static func generateCert(host: Swift.String) async throws -> Foundation.URL
-  @objc deinit
+@frozen public struct AnyCodable : Swift::Codable {
+  public let value: Any
+  public init<T>(_ value: T?)
 }
-extension Foundation.Data {
-  public func compress(withAlgorithm algo: Foundation.Data.CompressionAlgorithm) -> Foundation.Data?
-  public func decompress(withAlgorithm algo: Foundation.Data.CompressionAlgorithm) -> Foundation.Data?
-  public enum CompressionAlgorithm {
-    case zlib
-    case lzfse
-    case lzma
-    case lz4
-    public static func == (a: Foundation.Data.CompressionAlgorithm, b: Foundation.Data.CompressionAlgorithm) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-  public func deflate() -> Foundation.Data?
-  public func inflate() -> Foundation.Data?
-  public func zip() -> Foundation.Data?
-  public func unzip(skipCheckSumValidation: Swift.Bool = true) -> Foundation.Data?
-  public func gzip() -> Foundation.Data?
-  public func gunzip() -> Foundation.Data?
-  public func adler32() -> XReqResCore.Adler32
-  public func crc32() -> XReqResCore.Crc32
+extension XReqResCore::AnyCodable : XReqResCore::_AnyEncodable, XReqResCore::_AnyDecodable {
 }
-public struct Crc32 : Swift.CustomStringConvertible {
-  public init()
-  public var checksum: Swift.UInt32
-  public mutating func advance(withChunk chunk: Foundation.Data)
-  public var description: Swift.String {
+extension XReqResCore::AnyCodable : Swift::Equatable {
+  public static func == (lhs: XReqResCore::AnyCodable, rhs: XReqResCore::AnyCodable) -> Swift::Bool
+}
+extension XReqResCore::AnyCodable : Swift::CustomStringConvertible {
+  public var description: Swift::String {
     get
   }
 }
-public struct Adler32 : Swift.CustomStringConvertible {
-  public init()
-  public var checksum: Swift.UInt32
-  public mutating func advance(withChunk chunk: Foundation.Data)
-  public var description: Swift.String {
+extension XReqResCore::AnyCodable : Swift::CustomDebugStringConvertible {
+  public var debugDescription: Swift::String {
     get
   }
 }
-final public class DatabaseManager {
-  public static let shared: XReqResCore.DatabaseManager
-  final public var dbFileUrl: Foundation.URL?
-  final public var dbFolderURL: Foundation.URL?
-  final public var isInitialized: Swift.Bool {
-    get
-  }
-  public static func getCertPath() -> Foundation.URL?
-  public init(appGroupID: Swift.String)
-  final public func initializeDatabase()
-  final public func sharedDatabaseURL() -> Foundation.URL
-  final public func vacuum() async throws
-  final public func getDatabaseSize() -> Swift.Int64
-  final public func getTableCounts() async throws -> [Swift.String : Swift.Int]
-  final public func getMigrationStatus() async throws -> [Swift.String : Any]
-  @objc deinit
+extension XReqResCore::AnyCodable : Swift::ExpressibleByNilLiteral {
 }
-public enum DatabaseError : Swift.Error, Swift.Sendable {
-  case connectionFailed
-  case queryFailed(Swift.String)
-  case insertFailed
-  case migrationFailed(Swift.String)
+extension XReqResCore::AnyCodable : Swift::ExpressibleByBooleanLiteral {
+  public typealias BooleanLiteralType = Swift::Bool
 }
-@_hasMissingDesignatedInitializers public class TCPClientBus {
-  public func connect(host: Swift.String, port: Swift.Int) throws
-  public func sendMessage<T>(_ message: XReqResCore.ClientBusMessage<T>, logSessionToFile: Swift.Bool = false) where T : Swift.Decodable, T : Swift.Encodable
-  public func stop(completion: @escaping () -> Swift.Void)
-  @objc deinit
+extension XReqResCore::AnyCodable : Swift::ExpressibleByIntegerLiteral {
+  public typealias IntegerLiteralType = Swift::Int
 }
-public struct License : Swift.Codable {
-  public init(from decoder: any Swift.Decoder) throws
-  public func encode(to encoder: any Swift.Encoder) throws
+extension XReqResCore::AnyCodable : Swift::ExpressibleByFloatLiteral {
+  public typealias FloatLiteralType = Swift::Double
 }
-public enum LicenseError : Swift.Error, Foundation.LocalizedError {
-  case invalidKey
-  case activationFailed(Swift.String)
-  case networkError(any Swift.Error)
-  case notActivated
-  case licenseExpired
-  case deviceLimitReached(limit: Swift.Int, current: Swift.Int, canAdd: Swift.Bool)
-  case deviceNotActivated
-  public var errorDescription: Swift.String? {
+extension XReqResCore::AnyCodable : Swift::ExpressibleByStringLiteral {
+  public typealias ExtendedGraphemeClusterLiteralType = Swift::String
+  public typealias StringLiteralType = Swift::String
+  public typealias UnicodeScalarLiteralType = Swift::String
+}
+extension XReqResCore::AnyCodable : Swift::ExpressibleByStringInterpolation {
+  public typealias StringInterpolation = Swift::DefaultStringInterpolation
+}
+extension XReqResCore::AnyCodable : Swift::ExpressibleByArrayLiteral {
+  public typealias ArrayLiteralElement = Any
+}
+extension XReqResCore::AnyCodable : Swift::ExpressibleByDictionaryLiteral {
+  public typealias Key = Swift::AnyHashable
+  public typealias Value = Any
+}
+extension XReqResCore::AnyCodable : Swift::Hashable {
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
     get
   }
 }
-@_hasMissingDesignatedInitializers final public class LicenseManager : Foundation.ObservableObject {
-  public static let shared: XReqResCore.LicenseManager
-  @Combine.Published @_projectedValueProperty($isValidatingLicense) final public var isValidatingLicense: Swift.Bool {
-    get
-  }
-  final public var $isValidatingLicense: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($hasValidLicense) final public var hasValidLicense: Swift.Bool {
-    get
-  }
-  final public var $hasValidLicense: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($hasPayedPlan) final public var hasPayedPlan: Swift.Bool {
-    get
-  }
-  final public var $hasPayedPlan: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($planType) final public var planType: Swift.String? {
-    get
-  }
-  final public var $planType: Combine.Published<Swift.String?>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($expirationDate) final public var expirationDate: Foundation.Date? {
-    get
-  }
-  final public var $expirationDate: Combine.Published<Foundation.Date?>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($deviceCount) final public var deviceCount: Swift.Int {
-    get
-  }
-  final public var $deviceCount: Combine.Published<Swift.Int>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($deviceLimit) final public var deviceLimit: Swift.Int {
-    get
-  }
-  final public var $deviceLimit: Combine.Published<Swift.Int>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($freeVersionUnlocked) final public var freeVersionUnlocked: Swift.Bool {
-    get
-  }
-  final public var $freeVersionUnlocked: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($hasValidationFinished) final public var hasValidationFinished: Swift.Bool {
-    get
-  }
-  final public var $hasValidationFinished: Combine.Published<Swift.Bool>.Publisher {
-    get
-  }
-  @Combine.Published @_projectedValueProperty($shouldShowPurchaseWindow) final public var shouldShowPurchaseWindow: Swift.Bool {
-    get
-    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
-    set
-    @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
-    _modify
-  }
-  final public var $shouldShowPurchaseWindow: Combine.Published<Swift.Bool>.Publisher {
-    get
-    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
-    set
-  }
-  final public func checkLicense() -> Swift.Bool
-  final public func isProUser() -> Swift.Bool
-  @_Concurrency.MainActor final public func activateLicense(key: Swift.String) async throws
-  @_Concurrency.MainActor final public func validateLicense() async throws
-  @_Concurrency.MainActor final public func deactivate()
-  @_Concurrency.MainActor final public func unlockFreeVersion()
-  @_Concurrency.MainActor final public func showPurchaseWindow()
-  @_Concurrency.MainActor final public func dismissPurchaseWindow()
-  final public func getPlanDescription() -> Swift.String
-  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
-  @objc deinit
-}
-public enum LicensePlan : Swift.String, Swift.CaseIterable {
-  case two
-  case single
-  public var title: Swift.String {
-    get
-  }
-  public var price: Swift.String {
-    get
-  }
-  public var originalPrice: Swift.String? {
-    get
-  }
-  public var discount: Swift.String? {
-    get
-  }
-  public var isPopular: Swift.Bool {
-    get
-  }
-  public var keyFeature: Swift.String {
-    get
-  }
-  public var features: [XReqResCore.Feature] {
-    get
-  }
-  public func descriptionText(price: Swift.String?) -> Swift.String
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [XReqResCore.LicensePlan]
-  public typealias RawValue = Swift.String
-  nonisolated public static var allCases: [XReqResCore.LicensePlan] {
-    get
-  }
-  public var rawValue: Swift.String {
-    get
-  }
-}
-public struct Feature : Swift.Identifiable {
-  public let id: Foundation.UUID
-  public let text: Swift.String
-  public let included: Swift.Bool
-  public typealias ID = Foundation.UUID
-}
-public protocol TCPServerBusDelegate : AnyObject {
-  func tcpServerBus(_ server: XReqResCore.TCPServerBus, didReceiveMessage message: XReqResCore.ClientBusMessageNonGeneric, data: Foundation.Data)
-}
-public class TCPServerBus {
-  weak public var delegate: (any XReqResCore.TCPServerBusDelegate)?
-  public init()
-  public func start(port: Swift.Int) throws
-  public func stop()
-  public func sendMessageToClient<T>(_ message: XReqResCore.ServerBusMessage<T>) where T : Swift.Decodable, T : Swift.Encodable
-  public func isServerListening() -> Swift.Bool
-  @objc deinit
-}
-public enum RequestMethodOption : Swift.String, Swift.CaseIterable, Swift.Identifiable {
-  public var id: XReqResCore.RequestMethodOption {
-    get
-  }
-  case GET
-  case POST
-  case PUT
-  case PATCH
-  case DELETE
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [XReqResCore.RequestMethodOption]
-  public typealias ID = XReqResCore.RequestMethodOption
-  public typealias RawValue = Swift.String
-  nonisolated public static var allCases: [XReqResCore.RequestMethodOption] {
-    get
-  }
-  public var rawValue: Swift.String {
-    get
-  }
-}
-public enum UrlMatcherType : Swift.String, Swift.CaseIterable, Swift.Identifiable {
-  public var id: XReqResCore.UrlMatcherType {
-    get
-  }
-  case WILDCARD
-  case REGEX
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [XReqResCore.UrlMatcherType]
-  public typealias ID = XReqResCore.UrlMatcherType
-  public typealias RawValue = Swift.String
-  nonisolated public static var allCases: [XReqResCore.UrlMatcherType] {
-    get
-  }
-  public var rawValue: Swift.String {
-    get
-  }
-}
-public enum RuleMode : Swift.String, Swift.CaseIterable, Swift.Identifiable {
-  public var id: XReqResCore.RuleMode {
-    get
-  }
-  case EXTEND
-  case OVERRIDE
-  case MAP_LOCAL
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [XReqResCore.RuleMode]
-  public typealias ID = XReqResCore.RuleMode
-  public typealias RawValue = Swift.String
-  nonisolated public static var allCases: [XReqResCore.RuleMode] {
-    get
-  }
-  public var rawValue: Swift.String {
-    get
-  }
-}
-public enum RequestProtocolType : Swift.String, Swift.CaseIterable, Swift.Identifiable {
-  public var id: XReqResCore.RequestProtocolType {
-    get
-  }
-  case HTTPS
-  case HTTP
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [XReqResCore.RequestProtocolType]
-  public typealias ID = XReqResCore.RequestProtocolType
-  public typealias RawValue = Swift.String
-  nonisolated public static var allCases: [XReqResCore.RequestProtocolType] {
-    get
-  }
-  public var rawValue: Swift.String {
-    get
-  }
-}
-final public class RichTextViewModel : Foundation.ObservableObject {
-  convenience public init(string: Foundation.NSAttributedString = NSAttributedString())
-  public init(string: Foundation.NSAttributedString, contentType: XReqResCore.ContentType?)
-  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
-  @objc deinit
-}
-@_hasMissingDesignatedInitializers public class RequestHandlerUtils {
-  @objc deinit
-}
-@_hasMissingDesignatedInitializers public class NetworkInfo {
-  public static func LocalWifiIPv4() -> Swift.String
-  public static func WanIPv4() -> Swift.String
-  @objc deinit
-}
-public struct ClientBusMessage<Payload> : Swift.Codable where Payload : Swift.Decodable, Payload : Swift.Encodable {
-  public let action: XReqResCore.ClientBusAction
-  public let payload: Payload
-  public init(action: XReqResCore.ClientBusAction, payload: Payload)
-  public func toJSONData() -> Foundation.Data?
-  public static func fromJSONData(_ data: Foundation.Data) -> XReqResCore.ClientBusMessage<Payload>?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct ClientBusMessageNonGeneric : Swift.Codable {
-  public let action: XReqResCore.ClientBusAction
-  public let payload: [Swift.String : XReqResCore.AnyCodable]
-  public init(action: XReqResCore.ClientBusAction, payload: [Swift.String : XReqResCore.AnyCodable])
-  public func toJSONData() -> Foundation.Data?
-  public static func fromJSONData(_ data: Foundation.Data) -> XReqResCore.ClientBusMessageNonGeneric?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct RuleCodable : Swift.Codable, Swift.Identifiable, Swift.Equatable {
-  public var id: Foundation.UUID
-  public var path: Swift.String
-  @XReqResCore.NumberString public var hostId: Foundation.NSNumber {
-    get
-    set
-    _modify
-  }
-  @XReqResCore.NumberString public var enabled: Foundation.NSNumber {
-    get
-    set
-    _modify
-  }
-  @XReqResCore.NumberString public var isRegexp: Foundation.NSNumber {
-    get
-    set
-    _modify
-  }
-  @XReqResCore.NumberString public var isWildCard: Foundation.NSNumber {
-    get
-    set
-    _modify
-  }
-  public var ruleMode: XReqResCore.RuleMode
-  public var reqProtocol: Swift.String
-  public var reqMethod: Swift.String
-  public var reqHeaders: Swift.String
-  public var rspHeaders: Swift.String
-  @XReqResCore.NumberString public var rspCode: Foundation.NSNumber {
-    get
-    set
-    _modify
-  }
-  public var rspBody: Swift.String
-  public var rspPath: Swift.String
-  public var mapLocalData: XReqResCore.AnyCodable?
-  public var modelRealId: Swift.Int64?
-  public enum CodingKeys : Swift.String, Swift.CodingKey {
-    case id, path, hostId, enabled, isRegexp, isWildCard, ruleMode, reqProtocol, reqMethod, reqHeaders, rspHeaders, rspCode, rspBody, rspPath, mapLocalData, modelRealId
-    public init?(rawValue: Swift.String)
-    public init?(stringValue: Swift.String)
-    public init?(intValue: Swift.Int)
-    public typealias RawValue = Swift.String
-    public var intValue: Swift.Int? {
-      get
-    }
-    public var rawValue: Swift.String {
-      get
-    }
-    public var stringValue: Swift.String {
-      get
-    }
-  }
-  public init(id: Foundation.UUID = UUID(), path: Swift.String, hostId: Foundation.NSNumber, enabled: Foundation.NSNumber, isRegexp: Foundation.NSNumber, isWildCard: Foundation.NSNumber, ruleMode: XReqResCore.RuleMode, reqProtocol: Swift.String, reqMethod: Swift.String, reqHeaders: Swift.String, rspHeaders: Swift.String, rspCode: Foundation.NSNumber, rspBody: Swift.String, rspPath: Swift.String, mapLocalData: XReqResCore.AnyCodable? = nil, modelRealId: Swift.Int64? = nil)
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-  public static func == (lhs: XReqResCore.RuleCodable, rhs: XReqResCore.RuleCodable) -> Swift.Bool
-  public typealias ID = Foundation.UUID
-}
-public struct MapLocalFileCodable : Swift.Codable {
-  public var path: Swift.String
-  public var fileContent: Swift.String
-  public var mimeType: Swift.String
-  @XReqResCore.NumberString public var hostId: Foundation.NSNumber {
-    get
-    set
-    _modify
-  }
-  public init(path: Swift.String, fileData: Foundation.Data, mimeType: Swift.String, hostId: Foundation.NSNumber)
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-  public func getFileData() -> Foundation.Data?
-}
-@_Concurrency.MainActor @preconcurrency public struct SubscriptionSettingsView : SwiftUICore.View {
-  @_Concurrency.MainActor @preconcurrency public init(isInPreferences: Swift.Bool = false)
-  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUICore.View {
-    get
-  }
-  public typealias Body = @_opaqueReturnTypeOf("$s11XReqResCore24SubscriptionSettingsViewV4bodyQrvp", 0) __
-}
-@frozen public struct AnyDecodable : Swift.Decodable {
+@frozen public struct AnyDecodable : Swift::Decodable {
   public let value: Any
   public init<T>(_ value: T?)
 }
@@ -430,39 +76,31 @@ internal protocol _AnyDecodable {
   var value: Any { get }
   init<T>(_ value: T?)
 }
-extension XReqResCore.AnyDecodable : XReqResCore._AnyDecodable {
+extension XReqResCore::AnyDecodable : XReqResCore::_AnyDecodable {
 }
-extension XReqResCore._AnyDecodable {
-  public init(from decoder: any Swift.Decoder) throws
+extension XReqResCore::_AnyDecodable {
+  public init(from decoder: any Swift::Decoder) throws
 }
-extension XReqResCore.AnyDecodable : Swift.Equatable {
-  public static func == (lhs: XReqResCore.AnyDecodable, rhs: XReqResCore.AnyDecodable) -> Swift.Bool
+extension XReqResCore::AnyDecodable : Swift::Equatable {
+  public static func == (lhs: XReqResCore::AnyDecodable, rhs: XReqResCore::AnyDecodable) -> Swift::Bool
 }
-extension XReqResCore.AnyDecodable : Swift.CustomStringConvertible {
-  public var description: Swift.String {
+extension XReqResCore::AnyDecodable : Swift::CustomStringConvertible {
+  public var description: Swift::String {
     get
   }
 }
-extension XReqResCore.AnyDecodable : Swift.CustomDebugStringConvertible {
-  public var debugDescription: Swift.String {
+extension XReqResCore::AnyDecodable : Swift::CustomDebugStringConvertible {
+  public var debugDescription: Swift::String {
     get
   }
 }
-extension XReqResCore.AnyDecodable : Swift.Hashable {
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
+extension XReqResCore::AnyDecodable : Swift::Hashable {
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
     get
   }
 }
-public enum LengthFieldPrependerError : Swift.Error {
-  case messageDataTooLongForLengthField
-  public static func == (a: XReqResCore.LengthFieldPrependerError, b: XReqResCore.LengthFieldPrependerError) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-@frozen public struct AnyEncodable : Swift.Encodable {
+@frozen public struct AnyEncodable : Swift::Encodable {
   public let value: Any
   public init<T>(_ value: T?)
 }
@@ -471,178 +109,532 @@ internal protocol _AnyEncodable {
   var value: Any { get }
   init<T>(_ value: T?)
 }
-extension XReqResCore.AnyEncodable : XReqResCore._AnyEncodable {
+extension XReqResCore::AnyEncodable : XReqResCore::_AnyEncodable {
 }
-extension XReqResCore._AnyEncodable {
-  public func encode(to encoder: any Swift.Encoder) throws
+extension XReqResCore::_AnyEncodable {
+  public func encode(to encoder: any Swift::Encoder) throws
 }
-extension XReqResCore.AnyEncodable : Swift.Equatable {
-  public static func == (lhs: XReqResCore.AnyEncodable, rhs: XReqResCore.AnyEncodable) -> Swift.Bool
+extension XReqResCore::AnyEncodable : Swift::Equatable {
+  public static func == (lhs: XReqResCore::AnyEncodable, rhs: XReqResCore::AnyEncodable) -> Swift::Bool
 }
-extension XReqResCore.AnyEncodable : Swift.CustomStringConvertible {
-  public var description: Swift.String {
+extension XReqResCore::AnyEncodable : Swift::CustomStringConvertible {
+  public var description: Swift::String {
     get
   }
 }
-extension XReqResCore.AnyEncodable : Swift.CustomDebugStringConvertible {
-  public var debugDescription: Swift.String {
+extension XReqResCore::AnyEncodable : Swift::CustomDebugStringConvertible {
+  public var debugDescription: Swift::String {
     get
   }
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByNilLiteral {
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByNilLiteral {
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByBooleanLiteral {
-  public typealias BooleanLiteralType = Swift.Bool
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByBooleanLiteral {
+  public typealias BooleanLiteralType = Swift::Bool
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByIntegerLiteral {
-  public typealias IntegerLiteralType = Swift.Int
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByIntegerLiteral {
+  public typealias IntegerLiteralType = Swift::Int
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByFloatLiteral {
-  public typealias FloatLiteralType = Swift.Double
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByFloatLiteral {
+  public typealias FloatLiteralType = Swift::Double
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByStringLiteral {
-  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
-  public typealias StringLiteralType = Swift.String
-  public typealias UnicodeScalarLiteralType = Swift.String
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByStringLiteral {
+  public typealias ExtendedGraphemeClusterLiteralType = Swift::String
+  public typealias StringLiteralType = Swift::String
+  public typealias UnicodeScalarLiteralType = Swift::String
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByStringInterpolation {
-  public typealias StringInterpolation = Swift.DefaultStringInterpolation
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByStringInterpolation {
+  public typealias StringInterpolation = Swift::DefaultStringInterpolation
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByArrayLiteral {
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByArrayLiteral {
   public typealias ArrayLiteralElement = Any
 }
-extension XReqResCore.AnyEncodable : Swift.ExpressibleByDictionaryLiteral {
-  public typealias Key = Swift.AnyHashable
+extension XReqResCore::AnyEncodable : Swift::ExpressibleByDictionaryLiteral {
+  public typealias Key = Swift::AnyHashable
   public typealias Value = Any
 }
-extension XReqResCore._AnyEncodable {
+extension XReqResCore::_AnyEncodable {
   public init(nilLiteral _: ())
-  public init(booleanLiteral value: Swift.Bool)
-  public init(integerLiteral value: Swift.Int)
-  public init(floatLiteral value: Swift.Double)
-  public init(extendedGraphemeClusterLiteral value: Swift.String)
-  public init(stringLiteral value: Swift.String)
+  public init(booleanLiteral value: Swift::Bool)
+  public init(integerLiteral value: Swift::Int)
+  public init(floatLiteral value: Swift::Double)
+  public init(extendedGraphemeClusterLiteral value: Swift::String)
+  public init(stringLiteral value: Swift::String)
   public init(arrayLiteral elements: Any...)
-  public init(dictionaryLiteral elements: (Swift.AnyHashable, Any)...)
+  public init(dictionaryLiteral elements: (Swift::AnyHashable, Any)...)
 }
-extension XReqResCore.AnyEncodable : Swift.Hashable {
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
+extension XReqResCore::AnyEncodable : Swift::Hashable {
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
     get
   }
 }
-@_hasMissingDesignatedInitializers final public class AppLog {
-  public static let shared: os.Logger
+public struct CertHelper {
+  public static func getRootCertificate() async throws -> XReqResCore::CertHelper.XReqResCore::Certificate
+  public static func rootCertificateLogo() -> AppKit::NSImage
+  public static func getInstalledCertificate() -> Security::SecKeychainItem?
+  public static func getInstalledLegacyCertificate() -> Security::SecKeychainItem?
+  public static func installedCertificate(fingerprint: Swift::String) -> Security::SecKeychainItem?
+  public static func installedReqResCertificates() -> [Security::SecCertificate]
+  public static func outdatedInstalledCertificates() -> [Security::SecCertificate]
+  public static func fingerprintSHA256(of certificate: Security::SecCertificate) -> Swift::String
+  public static func isTrusted(_ certificate: Security::SecCertificate) -> Swift::Bool
+  public static func caState() -> XReqResCore::CAStatePayload
+  public struct Certificate {
+    public let secCertificate: Security::SecCertificate
+    public let commonName: Swift::String
+    public let trusted: Swift::Bool
+  }
+}
+public struct CertificateAuthority : Swift::Equatable, @unchecked Swift::Sendable {
+  public static let legacySharedCAFingerprintSHA256: Swift::String
+  public static let commonName: Swift::String
+  public static let installedOptionKey: Swift::String
+  public static let interceptOptionKey: Swift::String
+  public let certificatePEM: Swift::String
+  public let certificateDER: Foundation::Data
+  public let fingerprintSHA256: Swift::String
+  public var isLegacySharedCA: Swift::Bool {
+    get
+  }
+  public enum AuthorityError : Swift::Error, Swift::CustomStringConvertible {
+    case generation(Swift::String)
+    case unreadable(Swift::String)
+    case noDirectory
+    case write(Swift::String)
+    public var description: Swift::String {
+      get
+    }
+  }
+  public static func sha256Fingerprint(ofDER der: Foundation::Data) -> Swift::String
+  public static func storageDirectory() -> Foundation::URL?
+  public static func ensureInstallCA() throws -> XReqResCore::CertificateAuthority
+  public static func ensureInstallCA(in directory: Foundation::URL) throws -> XReqResCore::CertificateAuthority
+  public static func load(from directory: Foundation::URL) -> XReqResCore::CertificateAuthority?
+  public static func tunnelStartOptions() -> [Swift::String : ObjectiveC::NSObject]
+  public static func fromTunnelStartOptions(_ options: [Swift::String : ObjectiveC::NSObject]?) -> XReqResCore::CertificateAuthority?
+  @discardableResult
+  public static func removeLegacySharedFiles(in directory: Foundation::URL) -> Swift::Bool
+  public static func == (a: XReqResCore::CertificateAuthority, b: XReqResCore::CertificateAuthority) -> Swift::Bool
+}
+public struct CAStatePayload : Swift::Codable, Swift::Equatable, Swift::Sendable {
+  public let installed: Swift::Bool
+  public let fingerprint: Swift::String?
+  public init(installed: Swift::Bool, fingerprint: Swift::String?)
+  public static func == (a: XReqResCore::CAStatePayload, b: XReqResCore::CAStatePayload) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+final public class DatabaseManager {
+  public static let shared: XReqResCore::DatabaseManager
+  final public var dbFileUrl: Foundation::URL?
+  final public var dbFolderURL: Foundation::URL?
+  final public var isInitialized: Swift::Bool {
+    get
+  }
+  public init(appGroupID: Swift::String)
+  final public func initializeDatabase()
+  final public func sharedDatabaseURL() -> Foundation::URL
+  final public func vacuum() async throws
+  final public func getDatabaseSize() -> Swift::Int64
+  final public func getTableCounts() async throws -> [Swift::String : Swift::Int]
+  final public func getMigrationStatus() async throws -> [Swift::String : Any]
   @objc deinit
 }
-public struct SessionCodable : Swift.Codable, Swift.Identifiable, Swift.Equatable {
-  public var id: Foundation.UUID
-  @XReqResCore.NumberString public var startTime: Foundation.NSNumber {
+public enum DatabaseError : Swift::Error, Swift::Sendable {
+  case connectionFailed
+  case queryFailed(Swift::String)
+  case insertFailed
+  case migrationFailed(Swift::String)
+}
+public enum GRPCWire {
+  public static let unavailable: Swift::Int
+  public static func isNativeGRPC(contentType: Swift::String?) -> Swift::Bool
+  public static func statusName(_ code: Swift::Int) -> Swift::String?
+  public static func encodeMessage(_ text: Swift::String) -> Swift::String
+  public static func decodeMessage(_ encoded: Swift::String) -> Swift::String
+  public static func status(responseHeads: Swift::String?, responseTrailers: Swift::String?) -> (code: Swift::Int, message: Swift::String?)?
+}
+extension XReqResCore::SessionCodable {
+  public var isGRPC: Swift::Bool {
+    get
+  }
+  public var grpcStatus: Swift::Int? {
+    get
+  }
+  public var grpcMessage: Swift::String? {
+    get
+  }
+}
+public struct HostCodable : Swift::Codable, Swift::Identifiable, Swift::Equatable, Swift::Hashable {
+  public var id: Foundation::UUID
+  public var host: Swift::String
+  @XReqResCore::NumberString public var port: Foundation::NSNumber {
     get
     set
     _modify
   }
-  public var host: Swift.String
-  public var localAddress: Swift.String
-  public var method: Swift.String
-  public var uri: Swift.String
-  public var reqHttpVersion: Swift.String
-  public var target: Swift.String
-  public var reqHeads: Swift.String
-  public var reqEncoding: Swift.String
-  public var reqType: Swift.String
-  public var reqBody: Swift.String
-  public var rspHttpVersion: Swift.String?
-  public var state: Swift.String?
-  public var rspMessage: Swift.String?
-  public var rspType: Swift.String
-  public var rspEncoding: Swift.String
-  public var rspDisposition: Swift.String
-  public var rspHeads: Swift.String?
-  public var rspBody: Swift.String
-  public var rspBodyData: Foundation.Data?
-  public var scheme: Swift.String
-  @XReqResCore.NumberString public var reqStartTime: Foundation.NSNumber {
+  public var hostDbId: Foundation::NSNumber?
+  public var requestProtocol: Swift::String
+  public var modelRealId: Swift::Int64?
+  public init(id: Foundation::UUID = UUID(), host: Swift::String, port: Foundation::NSNumber, hostDbId: Foundation::NSNumber? = nil, requestProtocol: Swift::String, modelRealId: Swift::Int64? = nil)
+  public enum CodingKeys : Swift::String, Swift::CodingKey {
+    case id
+    case host
+    case port
+    case hostDbId
+    case requestProtocol
+    case modelRealId
+    public init?(rawValue: Swift::String)
+    public init?(stringValue: Swift::String)
+    public init?(intValue: Swift::Int)
+    public typealias RawValue = Swift::String
+    public var intValue: Swift::Int? {
+      get
+    }
+    public var rawValue: Swift::String {
+      get
+    }
+    public var stringValue: Swift::String {
+      get
+    }
+  }
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+  public static func == (lhs: XReqResCore::HostCodable, rhs: XReqResCore::HostCodable) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public typealias ID = Foundation::UUID
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+public enum LiveExchangePhase : Swift::String, Swift::Codable, Swift::Equatable, Swift::CaseIterable {
+  case waiting
+  case streaming
+  case withdrawn
+  public init(from decoder: any Swift::Decoder) throws
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::LiveExchangePhase]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::LiveExchangePhase] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum LiveStartReason : Swift::String, Swift::Codable, Swift::Equatable, Swift::CaseIterable {
+  case slow
+  case streamingResponse
+  public init(from decoder: any Swift::Decoder) throws
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::LiveStartReason]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::LiveStartReason] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum LiveTextStatus : Swift::String, Swift::Codable, Swift::Equatable, Swift::CaseIterable {
+  case awaitingResponse
+  case text
+  case noBody
+  case notText
+  case undecodedEncoding
+  case unsupportedCharset
+  case decodeFailed
+  case replacedByRule
+  case stoppedAtRetentionCap
+  case stoppedFellBehind
+  public init(from decoder: any Swift::Decoder) throws
+  public var textMayFollow: Swift::Bool {
+    get
+  }
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::LiveTextStatus]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::LiveTextStatus] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public struct LiveSessionStarted : Swift::Codable, Swift::Equatable {
+  public var exchangeID: Foundation::UUID
+  public var reason: XReqResCore::LiveStartReason
+  public var phase: XReqResCore::LiveExchangePhase
+  public var session: XReqResCore::SessionCodable
+  public var requestBytes: Swift::Int64
+  public var responseBytes: Swift::Int64
+  public var requestComplete: Swift::Bool
+  public var textStatus: XReqResCore::LiveTextStatus
+  public var undecodedEncoding: Swift::String?
+  public var sentAt: Foundation::TimeInterval
+  public init(exchangeID: Foundation::UUID, reason: XReqResCore::LiveStartReason, phase: XReqResCore::LiveExchangePhase, session: XReqResCore::SessionCodable, requestBytes: Swift::Int64, responseBytes: Swift::Int64, requestComplete: Swift::Bool, textStatus: XReqResCore::LiveTextStatus, undecodedEncoding: Swift::String? = nil, sentAt: Foundation::TimeInterval)
+  public init(from decoder: any Swift::Decoder) throws
+  public static func == (a: XReqResCore::LiveSessionStarted, b: XReqResCore::LiveSessionStarted) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+}
+public struct LiveSessionProgress : Swift::Codable, Swift::Equatable {
+  public var exchangeID: Foundation::UUID
+  public var sequence: Swift::Int
+  public var phase: XReqResCore::LiveExchangePhase
+  public var requestBytes: Swift::Int64
+  public var responseBytes: Swift::Int64
+  public var requestComplete: Swift::Bool
+  public var appendedText: Swift::String?
+  public var textOffset: Swift::Int64
+  public var textStatus: XReqResCore::LiveTextStatus
+  public var undecodedEncoding: Swift::String?
+  public var session: XReqResCore::SessionCodable?
+  public var sentAt: Foundation::TimeInterval
+  public init(exchangeID: Foundation::UUID, sequence: Swift::Int, phase: XReqResCore::LiveExchangePhase, requestBytes: Swift::Int64, responseBytes: Swift::Int64, requestComplete: Swift::Bool, appendedText: Swift::String?, textOffset: Swift::Int64, textStatus: XReqResCore::LiveTextStatus, undecodedEncoding: Swift::String? = nil, session: XReqResCore::SessionCodable? = nil, sentAt: Foundation::TimeInterval)
+  public init(from decoder: any Swift::Decoder) throws
+  public func encode(to encoder: any Swift::Encoder) throws
+  public static func == (a: XReqResCore::LiveSessionProgress, b: XReqResCore::LiveSessionProgress) -> Swift::Bool
+}
+public struct RuleCodable : Swift::Codable, Swift::Identifiable, Swift::Equatable {
+  public var id: Foundation::UUID
+  public var path: Swift::String
+  @XReqResCore::NumberString public var hostId: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var reqBodyStartTime: Foundation.NSNumber {
+  @XReqResCore::NumberString public var enabled: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var rspStartTime: Foundation.NSNumber {
+  @XReqResCore::NumberString public var isRegexp: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var rspEndTime: Foundation.NSNumber {
+  @XReqResCore::NumberString public var isWildCard: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var connectTime: Foundation.NSNumber {
+  public var ruleMode: XReqResCore::RuleMode
+  public var reqProtocol: Swift::String
+  public var reqMethod: Swift::String
+  public var reqHeaders: Swift::String
+  public var rspHeaders: Swift::String
+  @XReqResCore::NumberString public var rspCode: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var connectedTime: Foundation.NSNumber {
+  public var rspBody: Swift::String
+  public var rspPath: Swift::String
+  public var mapLocalData: XReqResCore::AnyCodable?
+  public var modelRealId: Swift::Int64?
+  public enum CodingKeys : Swift::String, Swift::CodingKey {
+    case id, path, hostId, enabled, isRegexp, isWildCard, ruleMode, reqProtocol, reqMethod, reqHeaders, rspHeaders, rspCode, rspBody, rspPath, mapLocalData, modelRealId
+    public init?(rawValue: Swift::String)
+    public init?(stringValue: Swift::String)
+    public init?(intValue: Swift::Int)
+    public typealias RawValue = Swift::String
+    public var intValue: Swift::Int? {
+      get
+    }
+    public var rawValue: Swift::String {
+      get
+    }
+    public var stringValue: Swift::String {
+      get
+    }
+  }
+  public init(id: Foundation::UUID = UUID(), path: Swift::String, hostId: Foundation::NSNumber, enabled: Foundation::NSNumber, isRegexp: Foundation::NSNumber, isWildCard: Foundation::NSNumber, ruleMode: XReqResCore::RuleMode, reqProtocol: Swift::String, reqMethod: Swift::String, reqHeaders: Swift::String, rspHeaders: Swift::String, rspCode: Foundation::NSNumber, rspBody: Swift::String, rspPath: Swift::String, mapLocalData: XReqResCore::AnyCodable? = nil, modelRealId: Swift::Int64? = nil)
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+  public static func == (lhs: XReqResCore::RuleCodable, rhs: XReqResCore::RuleCodable) -> Swift::Bool
+  public typealias ID = Foundation::UUID
+}
+public struct MapLocalFileCodable : Swift::Codable {
+  public var path: Swift::String
+  public var fileContent: Swift::String
+  public var mimeType: Swift::String
+  @XReqResCore::NumberString public var hostId: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var handshakeEndTime: Foundation.NSNumber {
+  public init(path: Swift::String, fileData: Foundation::Data, mimeType: Swift::String, hostId: Foundation::NSNumber)
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+  public func getFileData() -> Foundation::Data?
+}
+@_hasMissingDesignatedInitializers final public class AppLog {
+  public static let shared: os::Logger
+  @objc deinit
+}
+public enum SessionOutcome : Swift::String, Swift::Codable, Swift::Sendable, Swift::CaseIterable {
+  case completed
+  case failed
+  case aborted
+  case timedOut
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::SessionOutcome]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::SessionOutcome] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum SessionFailurePhase : Swift::String, Swift::Codable, Swift::Sendable, Swift::CaseIterable {
+  case dns
+  case connect
+  case tlsUpstream
+  case tlsClient
+  case request
+  case response
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::SessionFailurePhase]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::SessionFailurePhase] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public struct SessionCodable : Swift::Codable, Swift::Identifiable, Swift::Equatable {
+  public var id: Foundation::UUID
+  public var scheme: Swift::String
+  public var host: Swift::String
+  public var uri: Swift::String
+  public var method: Swift::String
+  public var localAddress: Swift::String
+  public var remoteAddress: Swift::String?
+  public var userAgentProduct: Swift::String
+  public var reqHTTPVersion: Swift::String
+  public var reqHeaders: Swift::String
+  public var reqContentType: Swift::String
+  public var reqContentEncoding: Swift::String
+  public var reqBody: Swift::String
+  @XReqResCore::NumberString public var requestBytes: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var reqEndTime: Foundation.NSNumber {
+  public var rspHTTPVersion: Swift::String?
+  public var rspStatus: Swift::String?
+  public var rspReasonPhrase: Swift::String?
+  public var rspHeaders: Swift::String?
+  public var rspContentType: Swift::String
+  public var rspContentEncoding: Swift::String
+  public var rspContentDisposition: Swift::String
+  public var rspBody: Swift::String
+  public var rspBodyData: Foundation::Data?
+  @XReqResCore::NumberString public var responseBytes: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var uploadTraffic: Foundation.NSNumber {
+  @XReqResCore::NumberString public var startTime: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var downloadFlow: Foundation.NSNumber {
+  @XReqResCore::NumberString public var connectStartTime: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var downloadStartTime: Foundation.NSNumber {
+  @XReqResCore::NumberString public var connectEndTime: Foundation::NSNumber {
     get
     set
     _modify
   }
-  @XReqResCore.NumberString public var downloadEndTime: Foundation.NSNumber {
+  @XReqResCore::NumberString public var tlsEndTime: Foundation::NSNumber {
     get
     set
     _modify
   }
-  public init(id: Foundation.UUID = UUID(), startTime: Foundation.NSNumber, host: Swift.String, localAddress: Swift.String, method: Swift.String, uri: Swift.String, reqHttpVersion: Swift.String, target: Swift.String, reqHeads: Swift.String, reqEncoding: Swift.String, reqType: Swift.String, reqBody: Swift.String, rspHttpVersion: Swift.String?, state: Swift.String?, rspMessage: Swift.String?, rspType: Swift.String = "", rspEncoding: Swift.String = "", rspDisposition: Swift.String = "", rspHeads: Swift.String?, rspBody: Swift.String = "", rspBodyData: Foundation.Data? = nil, scheme: Swift.String = "", reqStartTime: Foundation.NSNumber, reqBodyStartTime: Foundation.NSNumber, rspStartTime: Foundation.NSNumber, rspEndTime: Foundation.NSNumber, connectTime: Foundation.NSNumber = 0, connectedTime: Foundation.NSNumber = 0, handshakeEndTime: Foundation.NSNumber = 0, reqEndTime: Foundation.NSNumber = 0, uploadTraffic: Foundation.NSNumber = 0, downloadFlow: Foundation.NSNumber = 0, downloadStartTime: Foundation.NSNumber = 0, downloadEndTime: Foundation.NSNumber = 0)
-  public enum CodingKeys : Swift.String, Swift.CodingKey {
+  @XReqResCore::NumberString public var reqStartTime: Foundation::NSNumber {
+    get
+    set
+    _modify
+  }
+  @XReqResCore::NumberString public var reqBodyStartTime: Foundation::NSNumber {
+    get
+    set
+    _modify
+  }
+  @XReqResCore::NumberString public var reqEndTime: Foundation::NSNumber {
+    get
+    set
+    _modify
+  }
+  @XReqResCore::NumberString public var rspStartTime: Foundation::NSNumber {
+    get
+    set
+    _modify
+  }
+  @XReqResCore::NumberString public var downloadStartTime: Foundation::NSNumber {
+    get
+    set
+    _modify
+  }
+  @XReqResCore::NumberString public var downloadEndTime: Foundation::NSNumber {
+    get
+    set
+    _modify
+  }
+  @XReqResCore::NumberString public var rspEndTime: Foundation::NSNumber {
+    get
+    set
+    _modify
+  }
+  public var processName: Swift::String?
+  public var processID: Swift::Int?
+  public var processPath: Swift::String?
+  public var exchangeID: Foundation::UUID?
+  public var connectionReused: Swift::Bool
+  public var exchangeIndex: Swift::Int
+  public var reqBodyTruncatedBytes: Swift::Int64
+  public var rspBodyTruncatedBytes: Swift::Int64
+  public var relayed: Swift::Bool
+  public var outcome: XReqResCore::SessionOutcome
+  public var failurePhase: XReqResCore::SessionFailurePhase?
+  public var failureDetail: Swift::String?
+  public var clientCancelled: Swift::Bool
+  public var reqBodyData: Foundation::Data?
+  public var reqBodyIsBinary: Swift::Bool
+  public var rspBodyIsBinary: Swift::Bool
+  public var reqBodyUndecodedEncoding: Swift::String?
+  public var rspBodyUndecodedEncoding: Swift::String?
+  public var reqTrailers: Swift::String?
+  public var rspTrailers: Swift::String?
+  public var pinnedBy: Swift::String?
+  public init(id: Foundation::UUID = UUID(), startTime: Foundation::NSNumber, host: Swift::String, localAddress: Swift::String, method: Swift::String, uri: Swift::String, reqHTTPVersion: Swift::String, userAgentProduct: Swift::String, reqHeaders: Swift::String, reqContentEncoding: Swift::String, reqContentType: Swift::String, reqBody: Swift::String, rspHTTPVersion: Swift::String?, rspStatus: Swift::String?, rspReasonPhrase: Swift::String?, rspContentType: Swift::String = "", rspContentEncoding: Swift::String = "", rspContentDisposition: Swift::String = "", rspHeaders: Swift::String?, rspBody: Swift::String = "", rspBodyData: Foundation::Data? = nil, scheme: Swift::String = "", reqStartTime: Foundation::NSNumber, reqBodyStartTime: Foundation::NSNumber, rspStartTime: Foundation::NSNumber, rspEndTime: Foundation::NSNumber, connectStartTime: Foundation::NSNumber = 0, connectEndTime: Foundation::NSNumber = 0, tlsEndTime: Foundation::NSNumber = 0, reqEndTime: Foundation::NSNumber = 0, requestBytes: Foundation::NSNumber = 0, responseBytes: Foundation::NSNumber = 0, downloadStartTime: Foundation::NSNumber = 0, downloadEndTime: Foundation::NSNumber = 0, processName: Swift::String? = nil, processID: Swift::Int? = nil, processPath: Swift::String? = nil, remoteAddress: Swift::String? = nil, exchangeID: Foundation::UUID? = nil, connectionReused: Swift::Bool = false, exchangeIndex: Swift::Int = 0, reqBodyTruncatedBytes: Swift::Int64 = 0, rspBodyTruncatedBytes: Swift::Int64 = 0, relayed: Swift::Bool = false, outcome: XReqResCore::SessionOutcome = .completed, failurePhase: XReqResCore::SessionFailurePhase? = nil, failureDetail: Swift::String? = nil, clientCancelled: Swift::Bool = false, reqBodyData: Foundation::Data? = nil, reqBodyIsBinary: Swift::Bool = false, rspBodyIsBinary: Swift::Bool = false, reqBodyUndecodedEncoding: Swift::String? = nil, rspBodyUndecodedEncoding: Swift::String? = nil, reqTrailers: Swift::String? = nil, rspTrailers: Swift::String? = nil, pinnedBy: Swift::String? = nil)
+  public enum CodingKeys : Swift::String, Swift::CodingKey {
     case id
     case startTime
     case host
     case localAddress
     case method
     case uri
-    case reqHttpVersion
-    case target
-    case reqHeads
-    case reqEncoding
-    case reqType
+    case reqHTTPVersion
+    case userAgentProduct
+    case reqHeaders
+    case reqContentEncoding
+    case reqContentType
     case reqBody
-    case rspHttpVersion
-    case state
-    case rspMessage
-    case rspType
-    case rspEncoding
-    case rspDisposition
-    case rspHeads
+    case rspHTTPVersion
+    case rspStatus
+    case rspReasonPhrase
+    case rspContentType
+    case rspContentEncoding
+    case rspContentDisposition
+    case rspHeaders
     case rspBody
     case rspBodyData
     case scheme
@@ -650,507 +642,1256 @@ public struct SessionCodable : Swift.Codable, Swift.Identifiable, Swift.Equatabl
     case reqBodyStartTime
     case rspStartTime
     case rspEndTime
-    case connectTime
-    case connectedTime
-    case handshakeEndTime
+    case connectStartTime
+    case connectEndTime
+    case tlsEndTime
     case reqEndTime
-    case uploadTraffic
-    case downloadFlow
+    case requestBytes
+    case responseBytes
     case downloadStartTime
     case downloadEndTime
-    public init?(rawValue: Swift.String)
-    public init?(stringValue: Swift.String)
-    public init?(intValue: Swift.Int)
-    public typealias RawValue = Swift.String
-    public var intValue: Swift.Int? {
+    case processName
+    case processID
+    case processPath
+    case remoteAddress
+    case exchangeID
+    case connectionReused
+    case exchangeIndex
+    case reqBodyTruncatedBytes
+    case rspBodyTruncatedBytes
+    case relayed
+    case outcome
+    case failurePhase
+    case failureDetail
+    case clientCancelled
+    case reqBodyData
+    case reqBodyIsBinary
+    case rspBodyIsBinary
+    case reqBodyUndecodedEncoding
+    case rspBodyUndecodedEncoding
+    case reqTrailers
+    case rspTrailers
+    case pinnedBy
+    public init?(rawValue: Swift::String)
+    public init?(stringValue: Swift::String)
+    public init?(intValue: Swift::Int)
+    public typealias RawValue = Swift::String
+    public var intValue: Swift::Int? {
       get
     }
-    public var rawValue: Swift.String {
+    public var rawValue: Swift::String {
       get
     }
-    public var stringValue: Swift.String {
+    public var stringValue: Swift::String {
       get
     }
   }
-  public var fullUrl: Swift.String {
+  public var fullUrl: Swift::String {
     get
   }
-  public var cURL: Swift.String {
+  public var cURL: Swift::String {
     get
   }
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-  public static func == (lhs: XReqResCore.SessionCodable, rhs: XReqResCore.SessionCodable) -> Swift.Bool
-  public typealias ID = Foundation.UUID
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+  public static func == (lhs: XReqResCore::SessionCodable, rhs: XReqResCore::SessionCodable) -> Swift::Bool
+  public typealias ID = Foundation::UUID
 }
-@propertyWrapper public struct NumberString : Swift.Codable {
-  public var wrappedValue: Foundation.NSNumber
-  public init(wrappedValue: Foundation.NSNumber)
-  public init(from decoder: any Swift.Decoder) throws
-  public func encode(to encoder: any Swift.Encoder) throws
+@propertyWrapper public struct NumberString : Swift::Codable {
+  public var wrappedValue: Foundation::NSNumber
+  public init(wrappedValue: Foundation::NSNumber)
+  public init(from decoder: any Swift::Decoder) throws
+  public func encode(to encoder: any Swift::Encoder) throws
 }
-final public class SessionDetailsRenderer {
-  public enum RenderType {
-    case requestSummary
-    case requestHeaders
-    case requestBody
-    case responseSummary(attachmentSize: CoreFoundation.CGSize = CGSize(width: 300, height: 300))
-    case responseHeaders
-    case responseBody(attachmentSize: CoreFoundation.CGSize = CGSize(width: 300, height: 300))
-    case curl
+public enum SessionHeaderList {
+  public static func encode(_ pairs: [(name: Swift::String, value: Swift::String)]) -> Swift::String
+  public static func decode(_ json: Swift::String?) -> [(name: Swift::String, value: Swift::String)]
+  public static func values(named name: Swift::String, in json: Swift::String?) -> [Swift::String]
+}
+public enum WebSocketDirection : Swift::String, Swift::Codable, Swift::Equatable, Swift::CaseIterable {
+  case clientToServer
+  case serverToClient
+  public init(from decoder: any Swift::Decoder) throws
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::WebSocketDirection]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::WebSocketDirection] {
+    get
   }
-  public init()
-  final public func render(_ session: XReqResCore.SessionCodable, contentType: XReqResCore.SessionDetailsRenderer.RenderType) -> Foundation.NSAttributedString
-  final public func renderPreformatted(_ text: Swift.String) -> Foundation.NSAttributedString
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum WebSocketOpcode : Swift::String, Swift::Codable, Swift::Equatable, Swift::CaseIterable {
+  case text
+  case binary
+  case close
+  case ping
+  case pong
+  public init(from decoder: any Swift::Decoder) throws
+  public var isControl: Swift::Bool {
+    get
+  }
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::WebSocketOpcode]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::WebSocketOpcode] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum WebSocketPreviewEncoding : Swift::String, Swift::Codable, Swift::Equatable, Swift::CaseIterable {
+  case text
+  case base64
+  public init(from decoder: any Swift::Decoder) throws
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::WebSocketPreviewEncoding]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::WebSocketPreviewEncoding] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public struct WebSocketMessage : Swift::Codable, Swift::Equatable {
+  public var seq: Swift::Int64
+  public var direction: XReqResCore::WebSocketDirection
+  public var opcode: XReqResCore::WebSocketOpcode
+  public var time: Foundation::TimeInterval
+  public var size: Swift::Int64
+  public var wireSize: Swift::Int64
+  public var compressed: Swift::Bool
+  public var frames: Swift::Int
+  public var preview: Swift::String
+  public var previewEncoding: XReqResCore::WebSocketPreviewEncoding
+  public var truncated: Swift::Bool
+  public var closeCode: Swift::Int?
+  public var closeReason: Swift::String?
+  public init(seq: Swift::Int64, direction: XReqResCore::WebSocketDirection, opcode: XReqResCore::WebSocketOpcode, time: Foundation::TimeInterval, size: Swift::Int64, wireSize: Swift::Int64, compressed: Swift::Bool, frames: Swift::Int, preview: Swift::String, previewEncoding: XReqResCore::WebSocketPreviewEncoding, truncated: Swift::Bool, closeCode: Swift::Int? = nil, closeReason: Swift::String? = nil)
+  public init(from decoder: any Swift::Decoder) throws
+  public func encode(to encoder: any Swift::Encoder) throws
+  public static func == (a: XReqResCore::WebSocketMessage, b: XReqResCore::WebSocketMessage) -> Swift::Bool
+}
+public struct WebSocketTapIssue : Swift::Codable, Swift::Equatable {
+  public var direction: XReqResCore::WebSocketDirection
+  public var reason: Swift::String
+  public var atByte: Swift::Int64
+  public init(direction: XReqResCore::WebSocketDirection, reason: Swift::String, atByte: Swift::Int64)
+  public init(from decoder: any Swift::Decoder) throws
+  public static func == (a: XReqResCore::WebSocketTapIssue, b: XReqResCore::WebSocketTapIssue) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+}
+public enum WebSocketEnd : Swift::String, Swift::Codable, Swift::Equatable, Swift::CaseIterable {
+  case closeHandshake
+  case closeFrame
+  case connectionDropped
+  case idleTimeout
+  public init(from decoder: any Swift::Decoder) throws
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::WebSocketEnd]
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::WebSocketEnd] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public struct WebSocketCloseSummary : Swift::Codable, Swift::Equatable {
+  public var end: XReqResCore::WebSocketEnd
+  public var code: Swift::Int?
+  public var reason: Swift::String?
+  public var initiatedBy: XReqResCore::WebSocketDirection?
+  public var totalMessages: Swift::Int64
+  public var bytesFromClient: Swift::Int64
+  public var bytesFromServer: Swift::Int64
+  public init(end: XReqResCore::WebSocketEnd, code: Swift::Int?, reason: Swift::String?, initiatedBy: XReqResCore::WebSocketDirection?, totalMessages: Swift::Int64, bytesFromClient: Swift::Int64, bytesFromServer: Swift::Int64)
+  public init(from decoder: any Swift::Decoder) throws
+  public func encode(to encoder: any Swift::Encoder) throws
+  public static func == (a: XReqResCore::WebSocketCloseSummary, b: XReqResCore::WebSocketCloseSummary) -> Swift::Bool
+}
+public struct WebSocketMessageBatch : Swift::Codable, Swift::Equatable {
+  public var exchangeID: Foundation::UUID
+  public var batch: Swift::Int
+  public var messages: [XReqResCore::WebSocketMessage]
+  public var evictedMessages: Swift::Int64
+  public var gaveUp: [XReqResCore::WebSocketTapIssue]
+  public var extensions: Swift::String?
+  public var final: Swift::Bool
+  public var close: XReqResCore::WebSocketCloseSummary?
+  public var sentAt: Foundation::TimeInterval
+  public init(exchangeID: Foundation::UUID, batch: Swift::Int, messages: [XReqResCore::WebSocketMessage], evictedMessages: Swift::Int64, gaveUp: [XReqResCore::WebSocketTapIssue], extensions: Swift::String?, final: Swift::Bool, close: XReqResCore::WebSocketCloseSummary?, sentAt: Foundation::TimeInterval)
+  public init(from decoder: any Swift::Decoder) throws
+  public func encode(to encoder: any Swift::Encoder) throws
+  public static func == (a: XReqResCore::WebSocketMessageBatch, b: XReqResCore::WebSocketMessageBatch) -> Swift::Bool
+}
+public enum RequestMethodOption : Swift::String, Swift::CaseIterable, Swift::Identifiable {
+  public var id: XReqResCore::RequestMethodOption {
+    get
+  }
+  case GET
+  case POST
+  case PUT
+  case PATCH
+  case DELETE
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::RequestMethodOption]
+  public typealias ID = XReqResCore::RequestMethodOption
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::RequestMethodOption] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum UrlMatcherType : Swift::String, Swift::CaseIterable, Swift::Identifiable {
+  public var id: XReqResCore::UrlMatcherType {
+    get
+  }
+  case WILDCARD
+  case REGEX
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::UrlMatcherType]
+  public typealias ID = XReqResCore::UrlMatcherType
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::UrlMatcherType] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum RuleMode : Swift::String, Swift::CaseIterable, Swift::Identifiable {
+  public var id: XReqResCore::RuleMode {
+    get
+  }
+  case EXTEND
+  case OVERRIDE
+  case MAP_LOCAL
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::RuleMode]
+  public typealias ID = XReqResCore::RuleMode
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::RuleMode] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public enum RequestProtocolType : Swift::String, Swift::CaseIterable, Swift::Identifiable {
+  public var id: XReqResCore::RequestProtocolType {
+    get
+  }
+  case HTTPS
+  case HTTP
+  public init?(rawValue: Swift::String)
+  public typealias AllCases = [XReqResCore::RequestProtocolType]
+  public typealias ID = XReqResCore::RequestProtocolType
+  public typealias RawValue = Swift::String
+  nonisolated public static var allCases: [XReqResCore::RequestProtocolType] {
+    get
+  }
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public protocol ModelBridge {
+  static func findAllHosts() async throws -> [XReqResCore::HostCodable]
+  static func findAllRules() async throws -> [XReqResCore::RuleCodable]
+  static func findRulesByHost(id: Swift::Int64) async throws -> [XReqResCore::RuleCodable]
+  static func deleteHost(_ hostId: Swift::Int64) async throws
+  static func deleteRule(_ ruleId: Swift::Int64) async throws
+  static func deleteRulesByHost(_ hostId: Swift::Int64) async throws
+  static func saveRule(_ rule: XReqResCore::RuleCodable) async throws
+  static func saveHost(_ host: XReqResCore::HostCodable) async throws -> XReqResCore::HostCodable
+  static func saveSession(_ session: XReqResCore::SessionCodable, note: Swift::String?) async throws -> Swift::Int64
+  static func savedSessions(limit: Swift::Int, offset: Swift::Int) async throws -> [XReqResCore::SavedSessionCodable]
+  static func savedSession(id: Swift::Int64) async throws -> XReqResCore::SavedSessionCodable?
+  static func savedSessionCount() async throws -> Swift::Int
+  static func savedSessionByteSize() async throws -> Swift::Int64
+  static func deleteSavedSession(id: Swift::Int64) async throws -> Swift::Bool
+  static func deleteAllSavedSessions() async throws -> Swift::Int
+}
+public struct SavedSessionCodable : Swift::Codable, Swift::Identifiable, Swift::Equatable {
+  public let id: Swift::Int64
+  public let savedAt: Foundation::Date
+  public let note: Swift::String?
+  public let session: XReqResCore::SessionCodable
+  public init(id: Swift::Int64, savedAt: Foundation::Date, note: Swift::String?, session: XReqResCore::SessionCodable)
+  public static func == (a: XReqResCore::SavedSessionCodable, b: XReqResCore::SavedSessionCodable) -> Swift::Bool
+  public typealias ID = Swift::Int64
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+@_hasMissingDesignatedInitializers final public class ReqResCoreModelBridge : XReqResCore::ModelBridge {
+  public static func findAllHosts() async throws -> [XReqResCore::HostCodable]
+  public static func findAllRules() async throws -> [XReqResCore::RuleCodable]
+  public static func findRulesByHost(id: Swift::Int64) async throws -> [XReqResCore::RuleCodable]
+  public static func deleteHost(_ hostId: Swift::Int64) async throws
+  public static func deleteRule(_ ruleId: Swift::Int64) async throws
+  public static func deleteRulesByHost(_ hostId: Swift::Int64) async throws
+  public static func saveRule(_ rule: XReqResCore::RuleCodable) async throws
+  public static func saveSession(_ session: XReqResCore::SessionCodable, note: Swift::String?) async throws -> Swift::Int64
+  public static func savedSessions(limit: Swift::Int, offset: Swift::Int = 0) async throws -> [XReqResCore::SavedSessionCodable]
+  public static func savedSession(id: Swift::Int64) async throws -> XReqResCore::SavedSessionCodable?
+  public static func savedSessionCount() async throws -> Swift::Int
+  public static func savedSessionByteSize() async throws -> Swift::Int64
+  @discardableResult
+  public static func deleteSavedSession(id: Swift::Int64) async throws -> Swift::Bool
+  @discardableResult
+  public static func deleteAllSavedSessions() async throws -> Swift::Int
+  public static func saveHost(_ host: XReqResCore::HostCodable) async throws -> XReqResCore::HostCodable
   @objc deinit
 }
-public let extensionBundleId: Swift.String
-public struct CertHelper {
-  public static func getRootCertificate() async throws -> XReqResCore.CertHelper.Certificate
-  public static func rootCertificateLogo() -> AppKit.NSImage
-  public static func getInstalledCertificate() -> Security.SecKeychainItem?
-  public struct Certificate {
-    public let secCertificate: Security.SecCertificate
-    public let commonName: Swift.String
-    public let trusted: Swift.Bool
+public struct License : Swift::Codable {
+  public init(from decoder: any Swift::Decoder) throws
+  public func encode(to encoder: any Swift::Encoder) throws
+}
+public enum LicenseError : Swift::Error, Foundation::LocalizedError {
+  case invalidKey
+  case activationFailed(Swift::String)
+  case networkError(any Swift::Error)
+  case notActivated
+  case licenseExpired
+  case deviceLimitReached(limit: Swift::Int, current: Swift::Int, canAdd: Swift::Bool)
+  case deviceNotActivated
+  case unofficialBuild
+  case noLicenceServer
+  case serverUnavailable(message: Swift::String?)
+  case unverifiedAnswer
+  public var errorDescription: Swift::String? {
+    get
   }
 }
-public enum ServerBusAction : Swift.String, Swift.Codable {
+@_hasMissingDesignatedInitializers final public class LicenseManager : Foundation::ObservableObject {
+  public static let shared: XReqResCore::LicenseManager
+  @Combine::Published<Swift::Bool> @_projectedValueProperty($isValidatingLicense) final public var isValidatingLicense: Swift::Bool {
+    get
+  }
+  final public var $isValidatingLicense: Combine::Published<Swift::Bool>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::Bool> @_projectedValueProperty($hasValidLicense) final public var hasValidLicense: Swift::Bool {
+    get
+  }
+  final public var $hasValidLicense: Combine::Published<Swift::Bool>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::Bool> @_projectedValueProperty($hasPayedPlan) final public var hasPayedPlan: Swift::Bool {
+    get
+  }
+  final public var $hasPayedPlan: Combine::Published<Swift::Bool>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::String?> @_projectedValueProperty($planType) final public var planType: Swift::String? {
+    get
+  }
+  final public var $planType: Combine::Published<Swift::String?>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Foundation::Date?> @_projectedValueProperty($expirationDate) final public var expirationDate: Foundation::Date? {
+    get
+  }
+  final public var $expirationDate: Combine::Published<Foundation::Date?>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::Int> @_projectedValueProperty($deviceCount) final public var deviceCount: Swift::Int {
+    get
+  }
+  final public var $deviceCount: Combine::Published<Swift::Int>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::Int> @_projectedValueProperty($deviceLimit) final public var deviceLimit: Swift::Int {
+    get
+  }
+  final public var $deviceLimit: Combine::Published<Swift::Int>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::Bool> @_projectedValueProperty($freeVersionUnlocked) final public var freeVersionUnlocked: Swift::Bool {
+    get
+  }
+  final public var $freeVersionUnlocked: Combine::Published<Swift::Bool>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::Bool> @_projectedValueProperty($hasValidationFinished) final public var hasValidationFinished: Swift::Bool {
+    get
+  }
+  final public var $hasValidationFinished: Combine::Published<Swift::Bool>.Combine::Publisher {
+    get
+  }
+  @Combine::Published<Swift::Bool> @_projectedValueProperty($shouldShowPurchaseWindow) final public var shouldShowPurchaseWindow: Swift::Bool {
+    get
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+    set
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+    _modify
+  }
+  final public var $shouldShowPurchaseWindow: Combine::Published<Swift::Bool>.Combine::Publisher {
+    get
+    @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+    set
+  }
+  final public func checkLicense() -> Swift::Bool
+  final public func isProUser() -> Swift::Bool
+  @_Concurrency::MainActor final public func activateLicense(key: Swift::String) async throws
+  @_Concurrency::MainActor final public func validateLicense() async throws
+  @_Concurrency::MainActor final public func deactivate()
+  @_Concurrency::MainActor final public func deactivateThisMac() async throws
+  @_Concurrency::MainActor final public func unlockFreeVersion()
+  @_Concurrency::MainActor final public func showPurchaseWindow()
+  @_Concurrency::MainActor final public func dismissPurchaseWindow()
+  final public func getPlanDescription() -> Swift::String
+  public typealias ObjectWillChangePublisher = Combine::ObservableObjectPublisher
+  @objc deinit
+}
+public struct ContentType : Swift::Hashable, Swift::ExpressibleByStringLiteral {
+  public var type: Swift::String
+  public var parameters: [Swift::String : Swift::String]
+  public var rawValue: Swift::String
+  public init?(rawValue: Swift::String)
+  public static let any: XReqResCore::ContentType
+  public init(stringLiteral value: Swift::String)
+  public var isJSON: Swift::Bool {
+    get
+  }
+  public var isPDF: Swift::Bool {
+    get
+  }
+  public var isImage: Swift::Bool {
+    get
+  }
+  public var isHTML: Swift::Bool {
+    get
+  }
+  public var isEncodedForm: Swift::Bool {
+    get
+  }
+  public static func == (a: XReqResCore::ContentType, b: XReqResCore::ContentType) -> Swift::Bool
+  public typealias ExtendedGraphemeClusterLiteralType = Swift::String
+  public typealias StringLiteralType = Swift::String
+  public typealias UnicodeScalarLiteralType = Swift::String
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+public enum TextRendererDecodingError : Swift::Error, Swift::Codable, Swift::CustomDebugStringConvertible, Swift::Sendable {
+  case typeMismatch(type: Swift::String, context: XReqResCore::TextRendererDecodingError.XReqResCore::Context)
+  case valueNotFound(type: Swift::String, context: XReqResCore::TextRendererDecodingError.XReqResCore::Context)
+  case keyNotFound(codingKey: XReqResCore::TextRendererDecodingError.XReqResCore::CodingKey, context: XReqResCore::TextRendererDecodingError.XReqResCore::Context)
+  case dataCorrupted(context: XReqResCore::TextRendererDecodingError.XReqResCore::Context)
+  case unknown
+  public static let domain: Swift::String
+  public struct Context : Swift::Codable, Swift::CustomDebugStringConvertible, Swift::Sendable {
+    public var codingPath: [XReqResCore::TextRendererDecodingError.XReqResCore::CodingKey]
+    public var debugDescription: Swift::String
+    public init(_ context: Swift::DecodingError.Swift::Context)
+    public init(codingPath: [XReqResCore::TextRendererDecodingError.XReqResCore::CodingKey], debugDescription: Swift::String)
+    public func encode(to encoder: any Swift::Encoder) throws
+    public init(from decoder: any Swift::Decoder) throws
+  }
+  public enum CodingKey : Swift::Codable, Swift::Hashable, Swift::CustomDebugStringConvertible, Swift::Sendable {
+    case string(Swift::String)
+    case int(Swift::Int)
+    public init(_ key: any Swift::CodingKey)
+    public var debugDescription: Swift::String {
+      get
+    }
+    public static func == (a: XReqResCore::TextRendererDecodingError.XReqResCore::CodingKey, b: XReqResCore::TextRendererDecodingError.XReqResCore::CodingKey) -> Swift::Bool
+    public func encode(to encoder: any Swift::Encoder) throws
+    public func hash(into hasher: inout Swift::Hasher)
+    public var hashValue: Swift::Int {
+      get
+    }
+    public init(from decoder: any Swift::Decoder) throws
+  }
+  public init(_ error: Swift::DecodingError)
+  public var context: XReqResCore::TextRendererDecodingError.XReqResCore::Context? {
+    get
+  }
+  public var debugDescription: Swift::String {
+    get
+  }
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+@_Concurrency::MainActor @preconcurrency public struct RichSessionTextView : SwiftUICore::View {
+  @_Concurrency::MainActor @preconcurrency public init(viewModel: XReqResCore::RichTextViewModel)
+  @_Concurrency::MainActor @preconcurrency public var body: some SwiftUICore::View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s11XReqResCore19RichSessionTextViewV4bodyQrvp", 0) __
+}
+final public class RichTextViewModel : Foundation::ObservableObject {
+  convenience public init(string: Foundation::NSAttributedString = NSAttributedString())
+  public init(string: Foundation::NSAttributedString, contentType: XReqResCore::ContentType?)
+  public typealias ObjectWillChangePublisher = Combine::ObservableObjectPublisher
+  @objc deinit
+}
+public struct BreakpointRule : Swift::Codable, Swift::Equatable, Swift::Sendable {
+  public var host: Swift::String
+  public var pathContains: Swift::String?
+  public var methods: [Swift::String]
+  public var enabled: Swift::Bool
+  public init(host: Swift::String, pathContains: Swift::String? = nil, methods: [Swift::String] = [], enabled: Swift::Bool = true)
+  public func matches(host requestHost: Swift::String, method: Swift::String, uri: Swift::String) -> Swift::Bool
+  public static func == (a: XReqResCore::BreakpointRule, b: XReqResCore::BreakpointRule) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public struct PausedRequestCodable : Swift::Codable, Swift::Equatable, Swift::Sendable, Swift::Identifiable {
+  public let id: Swift::String
+  public let host: Swift::String
+  public let method: Swift::String
+  public let uri: Swift::String
+  public let scheme: Swift::String
+  public let headers: Swift::String
+  public let bodyPreview: Swift::String?
+  public let bodyByteCount: Swift::Int
+  public let pausedAt: Foundation::TimeInterval
+  public let expiresAt: Foundation::TimeInterval
+  public let bodyExpected: Swift::Bool?
+  public let declaredBodyLength: Swift::Int?
+  public init(id: Swift::String, host: Swift::String, method: Swift::String, uri: Swift::String, scheme: Swift::String, headers: Swift::String, bodyPreview: Swift::String?, bodyByteCount: Swift::Int, pausedAt: Foundation::TimeInterval, expiresAt: Foundation::TimeInterval, bodyExpected: Swift::Bool? = nil, declaredBodyLength: Swift::Int? = nil)
+  public static func == (a: XReqResCore::PausedRequestCodable, b: XReqResCore::PausedRequestCodable) -> Swift::Bool
+  public typealias ID = Swift::String
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public struct BreakpointDecisionCodable : Swift::Codable, Swift::Equatable, Swift::Sendable {
+  public enum Action : Swift::String, Swift::Codable, Swift::Sendable {
+    case resume
+    case abort
+    public init?(rawValue: Swift::String)
+    public typealias RawValue = Swift::String
+    public var rawValue: Swift::String {
+      get
+    }
+  }
+  public let id: Swift::String
+  public let action: XReqResCore::BreakpointDecisionCodable.XReqResCore::Action
+  public let headers: Swift::String?
+  public let body: Swift::String?
+  public let abortStatus: Swift::Int?
+  public init(id: Swift::String, action: XReqResCore::BreakpointDecisionCodable.XReqResCore::Action, headers: Swift::String? = nil, body: Swift::String? = nil, abortStatus: Swift::Int? = nil)
+  public static func resume(id: Swift::String) -> XReqResCore::BreakpointDecisionCodable
+  public static func == (a: XReqResCore::BreakpointDecisionCodable, b: XReqResCore::BreakpointDecisionCodable) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public enum BreakpointHeaderWire {
+  public static func encode(_ pairs: [(name: Swift::String, value: Swift::String)]) -> Swift::String?
+  public static func decode(_ json: Swift::String) -> [(name: Swift::String, value: Swift::String)]?
+  public static func isSendable(name: Swift::String, value: Swift::String) -> Swift::Bool
+}
+public enum BreakpointBodyFraming {
+  public static func contentLength(for body: Swift::String) -> Swift::String
+  public static let conflictingHeaders: [Swift::String]
+}
+final public class BreakpointRegistry : @unchecked Swift::Sendable {
+  public static let shared: XReqResCore::BreakpointRegistry
+  public static let decisionTimeout: Swift::Double
+  final public var rules: [XReqResCore::BreakpointRule] {
+    get
+  }
+  public init(now: @escaping () -> Foundation::Date = Date.init)
+  final public func setRules(_ rules: [XReqResCore::BreakpointRule])
+  final public func shouldPause(host: Swift::String, method: Swift::String, uri: Swift::String) -> Swift::Bool
+  final public func hold(host: Swift::String, method: Swift::String, uri: Swift::String, scheme: Swift::String, headers: Swift::String, bodyPreview: Swift::String?, bodyByteCount: Swift::Int, bodyExpected: Swift::Bool? = nil, declaredBodyLength: Swift::Int? = nil, onDecision: @escaping (XReqResCore::BreakpointDecisionCodable) -> Swift::Void) -> XReqResCore::PausedRequestCodable
+  @discardableResult
+  final public func decide(_ decision: XReqResCore::BreakpointDecisionCodable) -> Swift::Bool
+  final public func pendingRequests() -> [XReqResCore::PausedRequestCodable]
+  final public func releaseAll(reason: Swift::String)
+  final public func isHolding(_ id: Swift::String) -> Swift::Bool
+  @objc deinit
+}
+public enum HTTP2Capture {
+  public static let startOptionKey: Swift::String
+  public static func startOptions(enabled: Swift::Bool) -> [Swift::String : ObjectiveC::NSObject]
+  public static var isEnabled: Swift::Bool {
+    get
+  }
+}
+public struct HTTP2StatePayload : Swift::Codable, Swift::Equatable, Swift::Sendable {
+  public let enabled: Swift::Bool
+  public init(enabled: Swift::Bool)
+  public static func == (a: XReqResCore::HTTP2StatePayload, b: XReqResCore::HTTP2StatePayload) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public struct LearnedPin : Swift::Codable, Swift::Hashable, Swift::Sendable {
+  public var app: Swift::String
+  public var appName: Swift::String
+  public var domain: Swift::String
+  public init(app: Swift::String, appName: Swift::String, domain: Swift::String)
+  public func covers(host: Swift::String, processPath: Swift::String?, processName: Swift::String?) -> Swift::Bool
+  public var pinnedByValue: Swift::String {
+    get
+  }
+  public static func == (a: XReqResCore::LearnedPin, b: XReqResCore::LearnedPin) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+  public init(from decoder: any Swift::Decoder) throws
+}
+public enum PinDomain {
+  public static let appPrefix: Swift::String
+  public static func of(_ host: Swift::String) -> Swift::String
+}
+public struct BusReattachStatus : Swift::Codable, Swift::Equatable, Swift::Sendable {
+  public static let statusValue: Swift::String
+  public let status: Swift::String
+  public let reattached: Swift::Bool
+  public let droppedRows: Swift::Int
+  public let droppedMessages: Swift::Int
+  public let proxyPort: Swift::Int?
+  public let runStartedAt: Foundation::TimeInterval?
+  public init(droppedRows: Swift::Int, droppedMessages: Swift::Int, proxyPort: Swift::Int?, runStartedAt: Foundation::TimeInterval?)
+  public static func from(statusUpdateFrame data: Foundation::Data) -> XReqResCore::BusReattachStatus?
+  public static func == (a: XReqResCore::BusReattachStatus, b: XReqResCore::BusReattachStatus) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public enum ClientBusAction : Swift::String, Swift::Codable {
+  case ping
+  case statusUpdate
+  case sendSession
+  case breakpointHit
+  case attributionAvailabilityChanged
+  case sessionStarted
+  case sessionProgress
+  case websocketMessages
+  case hello
+  case interceptionState
+  case pinLearned
+  case unknown
+  public init(from decoder: any Swift::Decoder) throws
+  public init?(rawValue: Swift::String)
+  public typealias RawValue = Swift::String
+  public var rawValue: Swift::String {
+    get
+  }
+}
+public struct ClientBusMessage<Payload> : Swift::Codable where Payload : Swift::Decodable, Payload : Swift::Encodable {
+  public let action: XReqResCore::ClientBusAction
+  public let payload: Payload
+  public init(action: XReqResCore::ClientBusAction, payload: Payload)
+  public func toJSONData() -> Foundation::Data?
+  public static func fromJSONData(_ data: Foundation::Data) -> XReqResCore::ClientBusMessage<Payload>?
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public struct ClientBusMessageNonGeneric : Swift::Codable {
+  public let action: XReqResCore::ClientBusAction
+  public let payload: [Swift::String : XReqResCore::AnyCodable]
+  public init(action: XReqResCore::ClientBusAction, payload: [Swift::String : XReqResCore::AnyCodable])
+  public func toJSONData() -> Foundation::Data?
+  public static func fromJSONData(_ data: Foundation::Data) -> XReqResCore::ClientBusMessageNonGeneric?
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public enum NIOLengthFieldBasedFrameDecoderError : Swift::Error {
+  case lengthFieldValueTooLarge
+  case lengthFieldValueLargerThanMaxSupportedSize
+  case frameLongerThanAllowed
+  public static func == (a: XReqResCore::NIOLengthFieldBasedFrameDecoderError, b: XReqResCore::NIOLengthFieldBasedFrameDecoderError) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+public struct NIOLengthFieldBitLength : Swift::Sendable {
+  public static let oneByte: XReqResCore::NIOLengthFieldBitLength
+  public static let twoBytes: XReqResCore::NIOLengthFieldBitLength
+  public static let threeBytes: XReqResCore::NIOLengthFieldBitLength
+  public static let fourBytes: XReqResCore::NIOLengthFieldBitLength
+  public static let eightBytes: XReqResCore::NIOLengthFieldBitLength
+  public static let eightBits: XReqResCore::NIOLengthFieldBitLength
+  public static let sixteenBits: XReqResCore::NIOLengthFieldBitLength
+  public static let twentyFourBits: XReqResCore::NIOLengthFieldBitLength
+  public static let thirtyTwoBits: XReqResCore::NIOLengthFieldBitLength
+  public static let sixtyFourBits: XReqResCore::NIOLengthFieldBitLength
+}
+public protocol NIOExtrasError : Swift::Equatable, Swift::Error {
+}
+public enum LengthFieldPrependerError : Swift::Error {
+  case messageDataTooLongForLengthField
+  public static func == (a: XReqResCore::LengthFieldPrependerError, b: XReqResCore::LengthFieldPrependerError) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
+    get
+  }
+}
+public struct MessageBusCredential : Swift::Equatable, Swift::Sendable {
+  public static let install: XReqResCore::MessageBusCredential
+  public static func == (a: XReqResCore::MessageBusCredential, b: XReqResCore::MessageBusCredential) -> Swift::Bool
+}
+public struct ExtensionBusState : Swift::Codable, Swift::Equatable, Swift::Sendable {
+  public let bundleVersion: Swift::String?
+  public let credentialed: Swift::Bool
+  public let holdsCAMaterial: Swift::Bool
+  public let intercepting: Swift::Bool
+  public let http2Enabled: Swift::Bool
+  public init(bundleVersion: Swift::String?, credentialed: Swift::Bool, holdsCAMaterial: Swift::Bool, intercepting: Swift::Bool, http2Enabled: Swift::Bool)
+  public static func == (a: XReqResCore::ExtensionBusState, b: XReqResCore::ExtensionBusState) -> Swift::Bool
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
+}
+public struct RejectedBusClient : Swift::Equatable, Swift::Sendable {
+  public enum Reason : Swift::String, Swift::Sendable {
+    case noHello
+    case noCredential
+    case badProof
+    case timedOut
+    case unboundHello
+    public init?(rawValue: Swift::String)
+    public typealias RawValue = Swift::String
+    public var rawValue: Swift::String {
+      get
+    }
+  }
+  public let reason: XReqResCore::RejectedBusClient.XReqResCore::Reason
+  public let date: Foundation::Date
+  public let claimedState: XReqResCore::ExtensionBusState?
+  public static func == (a: XReqResCore::RejectedBusClient, b: XReqResCore::RejectedBusClient) -> Swift::Bool
+}
+public enum ServerBusAction : Swift::String, Swift::Codable {
   case pong
   case dataUpdate
   case selectedHostChanged
   case rulesChanged
   case allHostsChanged
-  public init?(rawValue: Swift.String)
-  public typealias RawValue = Swift.String
-  public var rawValue: Swift.String {
+  case excludedHostsChanged
+  case learnedPinsChanged
+  case breakpointRulesChanged
+  case breakpointDecision
+  case caStateChanged
+  case http2Changed
+  case challenge
+  case helloAccepted
+  case unknown
+  public init(from decoder: any Swift::Decoder) throws
+  public init?(rawValue: Swift::String)
+  public typealias RawValue = Swift::String
+  public var rawValue: Swift::String {
     get
   }
 }
-public let StartInExtension: Swift.Bool
-public let MessageBusPort: Swift.Int
-@frozen public struct AnyCodable : Swift.Codable {
-  public let value: Any
-  public init<T>(_ value: T?)
+public struct ServerBusMessage<Payload> : Swift::Codable where Payload : Swift::Decodable, Payload : Swift::Encodable {
+  public let action: XReqResCore::ServerBusAction
+  public let payload: Payload
+  public init(action: XReqResCore::ServerBusAction, payload: Payload)
+  public func toJSONData() -> Foundation::Data?
+  public static func fromJSONData(_ data: Foundation::Data) -> XReqResCore::ServerBusMessage<Payload>?
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
 }
-extension XReqResCore.AnyCodable : XReqResCore._AnyEncodable, XReqResCore._AnyDecodable {
+public struct ServerBusMessageNonGeneric : Swift::Codable {
+  public let action: XReqResCore::ServerBusAction
+  public let payload: [Swift::String : XReqResCore::AnyCodable]
+  public init(action: XReqResCore::ServerBusAction, payload: [Swift::String : XReqResCore::AnyCodable])
+  public func toJSONData() -> Foundation::Data?
+  public static func fromJSONData(_ data: Foundation::Data) -> XReqResCore::ServerBusMessageNonGeneric?
+  public func encode(to encoder: any Swift::Encoder) throws
+  public init(from decoder: any Swift::Decoder) throws
 }
-extension XReqResCore.AnyCodable : Swift.Equatable {
-  public static func == (lhs: XReqResCore.AnyCodable, rhs: XReqResCore.AnyCodable) -> Swift.Bool
-}
-extension XReqResCore.AnyCodable : Swift.CustomStringConvertible {
-  public var description: Swift.String {
-    get
-  }
-}
-extension XReqResCore.AnyCodable : Swift.CustomDebugStringConvertible {
-  public var debugDescription: Swift.String {
-    get
-  }
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByNilLiteral {
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByBooleanLiteral {
-  public typealias BooleanLiteralType = Swift.Bool
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByIntegerLiteral {
-  public typealias IntegerLiteralType = Swift.Int
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByFloatLiteral {
-  public typealias FloatLiteralType = Swift.Double
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByStringLiteral {
-  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
-  public typealias StringLiteralType = Swift.String
-  public typealias UnicodeScalarLiteralType = Swift.String
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByStringInterpolation {
-  public typealias StringInterpolation = Swift.DefaultStringInterpolation
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByArrayLiteral {
-  public typealias ArrayLiteralElement = Any
-}
-extension XReqResCore.AnyCodable : Swift.ExpressibleByDictionaryLiteral {
-  public typealias Key = Swift.AnyHashable
-  public typealias Value = Any
-}
-extension XReqResCore.AnyCodable : Swift.Hashable {
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-public enum ClientBusAction : Swift.String, Swift.Codable {
-  case ping
-  case statusUpdate
-  case sendSession
-  public init?(rawValue: Swift.String)
-  public typealias RawValue = Swift.String
-  public var rawValue: Swift.String {
-    get
-  }
-}
-@available(macOS 14.0, *)
-final public class SimpleHTTPServer {
-  final public let port: Swift.Int
-  public init(port: Swift.Int = 8080)
-  final public func start() async throws
-  final public func stop() async throws
-  final public var isRunning: Swift.Bool {
-    get
-  }
-  public static let version: Swift.String
+public class TCPClientBus {
+  public init()
+  public func connect(host: Swift::String, port: Swift::Int) throws
+  public func sendMessage<T>(_ message: XReqResCore::ClientBusMessage<T>) where T : Swift::Decodable, T : Swift::Encodable
+  public func stop(completion: @escaping () -> Swift::Void)
   @objc deinit
 }
-public let GROUPNAME: Swift.String
-public let CurrentRuleId: Swift.String
-@_Concurrency.MainActor @preconcurrency public struct RichSessionTextView : SwiftUICore.View {
-  @_Concurrency.MainActor @preconcurrency public init(viewModel: XReqResCore.RichTextViewModel)
-  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUICore.View {
-    get
-  }
-  public typealias Body = @_opaqueReturnTypeOf("$s11XReqResCore19RichSessionTextViewV4bodyQrvp", 0) __
+public protocol TCPServerBusDelegate : AnyObject {
+  func tcpServerBus(_ server: XReqResCore::TCPServerBus, didReceiveMessage message: XReqResCore::ClientBusMessageNonGeneric, data: Foundation::Data)
 }
-public struct HostCodable : Swift.Codable, Swift.Identifiable, Swift.Equatable, Swift.Hashable {
-  public var id: Foundation.UUID
-  public var host: Swift.String
-  @XReqResCore.NumberString public var port: Foundation.NSNumber {
-    get
-    set
-    _modify
-  }
-  public var hostDbId: Foundation.NSNumber?
-  public var requestProtocol: Swift.String
-  public var modelRealId: Swift.Int64?
-  public init(id: Foundation.UUID = UUID(), host: Swift.String, port: Foundation.NSNumber, hostDbId: Foundation.NSNumber? = nil, requestProtocol: Swift.String, modelRealId: Swift.Int64? = nil)
-  public enum CodingKeys : Swift.String, Swift.CodingKey {
-    case id
-    case host
-    case port
-    case hostDbId
-    case requestProtocol
-    case modelRealId
-    public init?(rawValue: Swift.String)
-    public init?(stringValue: Swift.String)
-    public init?(intValue: Swift.Int)
-    public typealias RawValue = Swift.String
-    public var intValue: Swift.Int? {
-      get
-    }
-    public var rawValue: Swift.String {
-      get
-    }
-    public var stringValue: Swift.String {
-      get
-    }
-  }
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-  public static func == (lhs: XReqResCore.HostCodable, rhs: XReqResCore.HostCodable) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public typealias ID = Foundation.UUID
-  public var hashValue: Swift.Int {
+@_hasMissingDesignatedInitializers public class TCPServerBus {
+  weak public var delegate: (any XReqResCore::TCPServerBusDelegate)?
+  convenience public init()
+  public var localPort: Swift::Int? {
     get
   }
+  public var extensionState: XReqResCore::ExtensionBusState? {
+    get
+  }
+  public var hasAuthenticatedExtension: Swift::Bool {
+    get
+  }
+  public var lastRejectedClient: XReqResCore::RejectedBusClient? {
+    get
+  }
+  public func start(port: Swift::Int) throws
+  public func stop()
+  public func sendMessageToClient<T>(_ message: XReqResCore::ServerBusMessage<T>) where T : Swift::Decodable, T : Swift::Encodable
+  public func isServerListening() -> Swift::Bool
+  @objc deinit
 }
-public enum TextRendererDecodingError : Swift.Error, Swift.Codable, Swift.CustomDebugStringConvertible, Swift.Sendable {
-  case typeMismatch(type: Swift.String, context: XReqResCore.TextRendererDecodingError.Context)
-  case valueNotFound(type: Swift.String, context: XReqResCore.TextRendererDecodingError.Context)
-  case keyNotFound(codingKey: XReqResCore.TextRendererDecodingError.CodingKey, context: XReqResCore.TextRendererDecodingError.Context)
-  case dataCorrupted(context: XReqResCore.TextRendererDecodingError.Context)
-  case unknown
-  public static let domain: Swift.String
-  public struct Context : Swift.Codable, Swift.CustomDebugStringConvertible, Swift.Sendable {
-    public var codingPath: [XReqResCore.TextRendererDecodingError.CodingKey]
-    public var debugDescription: Swift.String
-    public init(_ context: Swift.DecodingError.Context)
-    public init(codingPath: [XReqResCore.TextRendererDecodingError.CodingKey], debugDescription: Swift.String)
-    public func encode(to encoder: any Swift.Encoder) throws
-    public init(from decoder: any Swift.Decoder) throws
-  }
-  public enum CodingKey : Swift.Codable, Swift.Hashable, Swift.CustomDebugStringConvertible, Swift.Sendable {
-    case string(Swift.String)
-    case int(Swift.Int)
-    public init(_ key: any Swift.CodingKey)
-    public var debugDescription: Swift.String {
-      get
-    }
-    public static func == (a: XReqResCore.TextRendererDecodingError.CodingKey, b: XReqResCore.TextRendererDecodingError.CodingKey) -> Swift.Bool
-    public func encode(to encoder: any Swift.Encoder) throws
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-    public init(from decoder: any Swift.Decoder) throws
-  }
-  public init(_ error: Swift.DecodingError)
-  public var context: XReqResCore.TextRendererDecodingError.Context? {
-    get
-  }
-  public var debugDescription: Swift.String {
-    get
-  }
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
+public struct CompressionLevel : Swift::RawRepresentable {
+  public let rawValue: Swift::Int32
+  public static let noCompression: XReqResCore::CompressionLevel
+  public static let bestSpeed: XReqResCore::CompressionLevel
+  public static let bestCompression: XReqResCore::CompressionLevel
+  public static let defaultCompression: XReqResCore::CompressionLevel
+  public init(rawValue: Swift::Int32)
+  public init(_ rawValue: Swift::Int32)
+  public typealias RawValue = Swift::Int32
 }
-public struct ContentType : Swift.Hashable, Swift.ExpressibleByStringLiteral {
-  public var type: Swift.String
-  public var parameters: [Swift.String : Swift.String]
-  public var rawValue: Swift.String
-  public init?(rawValue: Swift.String)
-  public static let any: XReqResCore.ContentType
-  public init(stringLiteral value: Swift.String)
-  public var isJSON: Swift.Bool {
-    get
-  }
-  public var isPDF: Swift.Bool {
-    get
-  }
-  public var isImage: Swift.Bool {
-    get
-  }
-  public var isHTML: Swift.Bool {
-    get
-  }
-  public var isEncodedForm: Swift.Bool {
-    get
-  }
-  public static func == (a: XReqResCore.ContentType, b: XReqResCore.ContentType) -> Swift.Bool
-  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
-  public typealias StringLiteralType = Swift.String
-  public typealias UnicodeScalarLiteralType = Swift.String
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-public enum NIOLengthFieldBasedFrameDecoderError : Swift.Error {
-  case lengthFieldValueTooLarge
-  case lengthFieldValueLargerThanMaxSupportedSize
-  public static func == (a: XReqResCore.NIOLengthFieldBasedFrameDecoderError, b: XReqResCore.NIOLengthFieldBasedFrameDecoderError) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-public struct NIOLengthFieldBitLength : Swift.Sendable {
-  public static let oneByte: XReqResCore.NIOLengthFieldBitLength
-  public static let twoBytes: XReqResCore.NIOLengthFieldBitLength
-  public static let threeBytes: XReqResCore.NIOLengthFieldBitLength
-  public static let fourBytes: XReqResCore.NIOLengthFieldBitLength
-  public static let eightBytes: XReqResCore.NIOLengthFieldBitLength
-  public static let eightBits: XReqResCore.NIOLengthFieldBitLength
-  public static let sixteenBits: XReqResCore.NIOLengthFieldBitLength
-  public static let twentyFourBits: XReqResCore.NIOLengthFieldBitLength
-  public static let thirtyTwoBits: XReqResCore.NIOLengthFieldBitLength
-  public static let sixtyFourBits: XReqResCore.NIOLengthFieldBitLength
-}
-public protocol NIOExtrasError : Swift.Equatable, Swift.Error {
-}
-public struct ServerBusMessage<Payload> : Swift.Codable where Payload : Swift.Decodable, Payload : Swift.Encodable {
-  public let action: XReqResCore.ServerBusAction
-  public let payload: Payload
-  public init(action: XReqResCore.ServerBusAction, payload: Payload)
-  public func toJSONData() -> Foundation.Data?
-  public static func fromJSONData(_ data: Foundation.Data) -> XReqResCore.ServerBusMessage<Payload>?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct ServerBusMessageNonGeneric : Swift.Codable {
-  public let action: XReqResCore.ServerBusAction
-  public let payload: [Swift.String : XReqResCore.AnyCodable]
-  public init(action: XReqResCore.ServerBusAction, payload: [Swift.String : XReqResCore.AnyCodable])
-  public func toJSONData() -> Foundation.Data?
-  public static func fromJSONData(_ data: Foundation.Data) -> XReqResCore.ServerBusMessageNonGeneric?
-  public func encode(to encoder: any Swift.Encoder) throws
-  public init(from decoder: any Swift.Decoder) throws
-}
-public struct CompressionLevel : Swift.RawRepresentable {
-  public let rawValue: Swift.Int32
-  public static let noCompression: XReqResCore.CompressionLevel
-  public static let bestSpeed: XReqResCore.CompressionLevel
-  public static let bestCompression: XReqResCore.CompressionLevel
-  public static let defaultCompression: XReqResCore.CompressionLevel
-  public init(rawValue: Swift.Int32)
-  public init(_ rawValue: Swift.Int32)
-  public typealias RawValue = Swift.Int32
-}
-public struct GzipError : Swift.Error {
-  public enum Kind : Swift.Equatable {
+public struct GzipError : Swift::Error {
+  public enum Kind : Swift::Equatable {
     case stream
     case data
     case memory
     case buffer
     case version
-    case unknown(code: Swift.Int)
-    public static func == (a: XReqResCore.GzipError.Kind, b: XReqResCore.GzipError.Kind) -> Swift.Bool
+    case unknown(code: Swift::Int)
+    public static func == (a: XReqResCore::GzipError.XReqResCore::Kind, b: XReqResCore::GzipError.XReqResCore::Kind) -> Swift::Bool
   }
-  public let kind: XReqResCore.GzipError.Kind
-  public let message: Swift.String
-  public var localizedDescription: Swift.String {
+  public let kind: XReqResCore::GzipError.XReqResCore::Kind
+  public let message: Swift::String
+  public var localizedDescription: Swift::String {
     get
   }
 }
-extension Foundation.Data {
-  public var isGzipped: Swift.Bool {
+extension Foundation::Data {
+  public var isGzipped: Swift::Bool {
     get
   }
-  public func gzipped(level: XReqResCore.CompressionLevel = .defaultCompression) throws -> Foundation.Data
-  public func gunzipped() throws -> Foundation.Data
+  public func gzipped(level: XReqResCore::CompressionLevel = .defaultCompression) throws -> Foundation::Data
+  public func gunzipped() throws -> Foundation::Data
 }
-public struct ServerChannelError : Swift.Error {
+extension Foundation::Data {
+  public func compress(withAlgorithm algo: Foundation::Data.XReqResCore::CompressionAlgorithm) -> Foundation::Data?
+  public func decompress(withAlgorithm algo: Foundation::Data.XReqResCore::CompressionAlgorithm) -> Foundation::Data?
+  public enum CompressionAlgorithm {
+    case zlib
+    case lzfse
+    case lzma
+    case lz4
+    public static func == (a: Foundation::Data.XReqResCore::CompressionAlgorithm, b: Foundation::Data.XReqResCore::CompressionAlgorithm) -> Swift::Bool
+    public func hash(into hasher: inout Swift::Hasher)
+    public var hashValue: Swift::Int {
+      get
+    }
+  }
+  public func deflate() -> Foundation::Data?
+  public func inflate() -> Foundation::Data?
+  public func zip() -> Foundation::Data?
+  public func unzip(skipCheckSumValidation: Swift::Bool = true) -> Foundation::Data?
+  public func gzip() -> Foundation::Data?
+  public func gunzip() -> Foundation::Data?
+  public func adler32() -> XReqResCore::Adler32
+  public func crc32() -> XReqResCore::Crc32
 }
-@objc @_hasMissingDesignatedInitializers public class MitmService : ObjectiveC.NSObject {
-  public static var storeFolder: Swift.String
-  public static var allHosts: [XReqResCore.HostCodable]
-  public static var allHostsByHostId: [Swift.Int64 : XReqResCore.HostCodable]
-  public static var allHostsByHostName: [Swift.String : XReqResCore.HostCodable]
-  public static var allHostsRules: [XReqResCore.RuleCodable]
-  public static var mapLocalFiles: [Swift.String : XReqResCore.MapLocalFileCodable]
-  public static var isCACertificateInstalledInKeychain: Swift.Bool
-  public static let tcpClientBus: XReqResCore.TCPClientBus
-  public static func prepare(isCACertificateInstalledInKeychain: Swift.Bool, completion: @escaping (XReqResCore.MitmService?) -> Swift.Void)
-  public func restart() -> XReqResCore.MitmService?
-  public func run(_ callback: @escaping (Swift.Result<Swift.Int, any Swift.Error>) -> Swift.Void)
-  public func openUDPServer(ip: Swift.String, port: Swift.Int, _ callback: ((Swift.Result<Swift.Int, any Swift.Error>) -> Swift.Void)?)
-  public func openLocalServer(ip: Swift.String, port: Swift.Int, _ callback: ((Swift.Result<Swift.Int, any Swift.Error>) -> Swift.Void)?)
-  public func openWifiServer(ip: Swift.String, port: Swift.Int, _ callback: ((Swift.Result<Swift.Int, any Swift.Error>) -> Swift.Void)?)
-  public func wifiNetWorkChanged(isOpen: Swift.Bool)
-  public func close()
-  public func closeWifiServer()
-  public func closeLocalServer()
-  public static func getStoreFolder() -> Swift.String
-  public static func getCertPath() -> Foundation.URL?
-  public static func getDBPath() -> Swift.String
-  public static func createAndGetDirectory(dirname: Swift.String) throws -> Foundation.URL?
-  public static func getTestDBPath() -> Swift.String
-  public static func loadCACert()
+public struct Crc32 : Swift::CustomStringConvertible {
+  public init()
+  public var checksum: Swift::UInt32
+  public mutating func advance(withChunk chunk: Foundation::Data)
+  public var description: Swift::String {
+    get
+  }
+}
+public struct Adler32 : Swift::CustomStringConvertible {
+  public init()
+  public var checksum: Swift::UInt32
+  public mutating func advance(withChunk chunk: Foundation::Data)
+  public var description: Swift::String {
+    get
+  }
+}
+public enum SocketAddressText {
+  public static func bareIP(from recorded: Swift::String?) -> Swift::String?
+}
+public struct ConnectionIdlePolicy : Swift::Equatable, Swift::Sendable {
+  public let idleTimeout: Foundation::TimeInterval
+  public let inFlightTimeout: Foundation::TimeInterval
+  public let heldCeiling: Foundation::TimeInterval
+  public init(idleTimeout: Foundation::TimeInterval, heldCeiling: Foundation::TimeInterval)
+  public init(idleTimeout: Foundation::TimeInterval, inFlightTimeout: Foundation::TimeInterval, heldCeiling: Foundation::TimeInterval)
+  public func timeout(inFlight: Swift::Bool) -> Foundation::TimeInterval
+  public static let http: XReqResCore::ConnectionIdlePolicy
+  public static let relayed: XReqResCore::ConnectionIdlePolicy
+  public func shouldClose(isHeld: Swift::Bool, heldFor: Foundation::TimeInterval) -> Swift::Bool
+  public static func == (a: XReqResCore::ConnectionIdlePolicy, b: XReqResCore::ConnectionIdlePolicy) -> Swift::Bool
+}
+final public class ConnectionHold : @unchecked Swift::Sendable {
+  public init(now: @escaping () -> Foundation::Date = Date.init)
+  final public var isHeld: Swift::Bool {
+    get
+  }
+  final public var heldFor: Foundation::TimeInterval {
+    get
+  }
+  final public func hold()
+  final public func release()
   @objc deinit
 }
-public let cc1: Swift.String
-public let cc2: Swift.String
-public let cc3: Swift.String
-public let ccDerBase64: Swift.String
-public let ck1: Swift.String
-public let ck2: Swift.String
-public let ck3: Swift.String
-public let rk1: Swift.String
-public let rk2: Swift.String
-public let rk3: Swift.String
-extension Foundation.Date {
-  public var fullSting: Swift.String {
+@_hasMissingDesignatedInitializers final public class MitmService {
+  public static var allHosts: [XReqResCore::HostCodable]
+  public static var allHostsByHostId: [Swift::Int64 : XReqResCore::HostCodable]
+  public static var allHostsByHostName: [Swift::String : XReqResCore::HostCodable]
+  public static var allHostsRules: [XReqResCore::RuleCodable]
+  public static var mapLocalFiles: [Swift::String : XReqResCore::MapLocalFileCodable]
+  public static var isCACertificateInstalledInKeychain: Swift::Bool {
+    get
+  }
+  public static let tcpClientBus: XReqResCore::TCPClientBus
+  public enum StartFailure : Swift::Error, Swift::Equatable, Swift::Sendable {
+    case startedOutsideReqRes
+    case stoppedBeforeStart
+    public static func == (a: XReqResCore::MitmService.XReqResCore::StartFailure, b: XReqResCore::MitmService.XReqResCore::StartFailure) -> Swift::Bool
+    public func hash(into hasher: inout Swift::Hasher)
+    public var hashValue: Swift::Int {
+      get
+    }
+  }
+  public static func captureStopped()
+  public static let listenAddress: Swift::String
+  public enum ListenFailure : Foundation::LocalizedError, Swift::Equatable {
+    case bind(port: Swift::Int, reason: Swift::String)
+    case noLocalAddress(port: Swift::Int)
+    case closedBeforeListening(port: Swift::Int)
+    public var errorDescription: Swift::String? {
+      get
+    }
+    public static func == (a: XReqResCore::MitmService.XReqResCore::ListenFailure, b: XReqResCore::MitmService.XReqResCore::ListenFailure) -> Swift::Bool
+  }
+  public static func prepareCapture(tunnelOptions options: [Swift::String : ObjectiveC::NSObject]?, completion: @escaping (Swift::Result<XReqResCore::MitmService, XReqResCore::MitmService.XReqResCore::StartFailure>) -> Swift::Void)
+  public static var excludedHosts: [Swift::String]
+  public static func isExcluded(host: Swift::String) -> Swift::Bool
+  final public func run(_ completion: @escaping (Swift::Result<Swift::Void, any Swift::Error>) -> Swift::Void)
+  final public func close()
+  @objc deinit
+}
+public enum ProxyPort {
+  public static let startOptionKey: Swift::String
+  public static let defaultPort: Swift::Int
+  public static func isAllowed(_ port: Swift::Int) -> Swift::Bool
+  public static func from(options: [Swift::String : ObjectiveC::NSObject]?) -> Swift::Int
+  public static func merging(into options: [Swift::String : ObjectiveC::NSObject], port: Swift::Int) -> [Swift::String : ObjectiveC::NSObject]
+}
+public enum ListeningPortOwner {
+  public static func processName(listeningOn port: Swift::Int, calibratingOn ownListeningPort: Swift::Int) -> Swift::String?
+  public static func processPath(listeningOn port: Swift::Int, calibratingOn ownListeningPort: Swift::Int) -> Swift::String?
+}
+public let MessageBusPort: Swift::Int
+@available(macOS 14.0, *)
+final public class SimpleHTTPServer {
+  final public let port: Swift::Int
+  public init(port: Swift::Int = 8080)
+  final public func start() async throws
+  final public func stop() async throws
+  final public var isRunning: Swift::Bool {
+    get
+  }
+  public static let version: Swift::String
+  @objc deinit
+}
+@frozen public enum LicenseOperation : Swift::Sendable {
+  case activate
+  case deactivate
+  public static func == (a: XReqResCore::LicenseOperation, b: XReqResCore::LicenseOperation) -> Swift::Bool
+  public func hash(into hasher: inout Swift::Hasher)
+  public var hashValue: Swift::Int {
     get
   }
 }
-public protocol ModelBridge {
-  static func findAllHosts() async throws -> [XReqResCore.HostCodable]
-  static func findAllRules() async throws -> [XReqResCore.RuleCodable]
-  static func findRulesByHost(id: Swift.Int64) async throws -> [XReqResCore.RuleCodable]
-  static func deleteHost(_ hostId: Swift.Int64) async throws
-  static func deleteRule(_ ruleId: Swift.Int64) async throws
-  static func deleteRulesByHost(_ hostId: Swift.Int64) async throws
-  static func saveRule(_ rule: XReqResCore.RuleCodable) async throws
-  static func saveHost(_ host: XReqResCore.HostCodable) async throws -> XReqResCore.HostCodable
+@frozen public enum LicenseFailure : Swift::Equatable, Swift::Sendable {
+  @frozen public enum NetworkProblem : Swift::Equatable, Swift::Sendable {
+    case offline
+    case timedOut
+    case other
+    public static func == (a: XReqResCore::LicenseFailure.XReqResCore::NetworkProblem, b: XReqResCore::LicenseFailure.XReqResCore::NetworkProblem) -> Swift::Bool
+    public func hash(into hasher: inout Swift::Hasher)
+    public var hashValue: Swift::Int {
+      get
+    }
+  }
+  case keyFormat
+  case keyNotAccepted(serverMessage: Swift::String?)
+  case licenseExpired
+  case deviceLimit(current: Swift::Int, limit: Swift::Int, canAdd: Swift::Bool)
+  case serverUnavailable
+  case network(XReqResCore::LicenseFailure.XReqResCore::NetworkProblem)
+  case unverifiedAnswer
+  case unofficialBuild
+  case noLicenceServer
+  case notActivated
+  case unknown(description: Swift::String)
+  public init(_ error: any Swift::Error)
+  public static func == (a: XReqResCore::LicenseFailure, b: XReqResCore::LicenseFailure) -> Swift::Bool
 }
-@_hasMissingDesignatedInitializers final public class ReqResCoreModelBridge : XReqResCore.ModelBridge {
-  public static func findAllHosts() async throws -> [XReqResCore.HostCodable]
-  public static func findAllRules() async throws -> [XReqResCore.RuleCodable]
-  public static func findRulesByHost(id: Swift.Int64) async throws -> [XReqResCore.RuleCodable]
-  public static func deleteHost(_ hostId: Swift.Int64) async throws
-  public static func deleteRule(_ ruleId: Swift.Int64) async throws
-  public static func deleteRulesByHost(_ hostId: Swift.Int64) async throws
-  public static func saveRule(_ rule: XReqResCore.RuleCodable) async throws
-  public static func saveHost(_ host: XReqResCore.HostCodable) async throws -> XReqResCore.HostCodable
+public struct PlanSheetContent {
+  public struct Gain : Swift::Identifiable {
+    public let id: Swift::String
+    public let symbol: Swift::String
+    public let title: Swift::String
+    public let detail: Swift::String
+    public let freeNote: Swift::String
+    public init(id: Swift::String, symbol: Swift::String, title: Swift::String, detail: Swift::String, freeNote: Swift::String)
+    public typealias ID = Swift::String
+  }
+  public struct Step : Swift::Identifiable {
+    public let id: Swift::Int
+    public let title: Swift::String
+    public let body: Swift::String
+    public init(id: Swift::Int, title: Swift::String, body: Swift::String)
+    public typealias ID = Swift::Int
+  }
+  public struct Fact : Swift::Identifiable {
+    public var id: Swift::String {
+      get
+    }
+    public let symbol: Swift::String
+    public let text: Swift::String
+    public let url: Foundation::URL?
+    public init(symbol: Swift::String, text: Swift::String, url: Foundation::URL?)
+    public typealias ID = Swift::String
+  }
+  public struct Link : Swift::Identifiable {
+    public var id: Swift::String {
+      get
+    }
+    public let title: Swift::String
+    public let url: Foundation::URL
+    public let hint: Swift::String
+    public init(title: Swift::String, url: Foundation::URL, hint: Swift::String)
+    public typealias ID = Swift::String
+  }
+  public struct Row : Swift::Identifiable {
+    public var id: Swift::String {
+      get
+    }
+    public let label: Swift::String
+    public let value: Swift::String
+    public init(label: Swift::String, value: Swift::String)
+    public typealias ID = Swift::String
+  }
+  public struct KeyEntry {
+    public var label: Swift::String
+    public var prompt: Swift::String
+    public var activateButton: Swift::String
+    public var note: Swift::String
+    public var sheetTitle: Swift::String
+    public var cancelButton: Swift::String
+    public init(label: Swift::String, prompt: Swift::String, activateButton: Swift::String, note: Swift::String, sheetTitle: Swift::String, cancelButton: Swift::String)
+  }
+  public struct Licensed {
+    public var activeBadge: Swift::String
+    public var activeLine: Swift::String
+    public var sectionTitle: Swift::String
+    public var macsInUseLabel: Swift::String
+    public var macsInUse: (_ count: Swift::Int, _ limit: Swift::Int) -> Swift::String
+    public var perpetualTerms: [XReqResCore::PlanSheetContent.XReqResCore::Row]
+    public var note: Swift::String
+    public var macsSectionTitle: Swift::String
+    public var thisMacTitle: Swift::String
+    public var thisMacNote: Swift::String
+    public var deactivateTitle: Swift::String
+    public var deactivateConfirmTitle: Swift::String
+    public var deactivateConfirmMessage: Swift::String
+    public var deactivateConfirmButton: Swift::String
+    public var allMacsTitle: Swift::String
+    public var allMacsNote: Swift::String
+    public var manage: XReqResCore::PlanSheetContent.XReqResCore::Link
+    public var doneTitle: Swift::String
+    public init(activeBadge: Swift::String, activeLine: Swift::String, sectionTitle: Swift::String, macsInUseLabel: Swift::String, macsInUse: @escaping (_ count: Swift::Int, _ limit: Swift::Int) -> Swift::String, perpetualTerms: [XReqResCore::PlanSheetContent.XReqResCore::Row], note: Swift::String, macsSectionTitle: Swift::String, thisMacTitle: Swift::String, thisMacNote: Swift::String, deactivateTitle: Swift::String, deactivateConfirmTitle: Swift::String, deactivateConfirmMessage: Swift::String, deactivateConfirmButton: Swift::String, allMacsTitle: Swift::String, allMacsNote: Swift::String, manage: XReqResCore::PlanSheetContent.XReqResCore::Link, doneTitle: Swift::String)
+  }
+  public struct FailureCopy : Swift::Equatable {
+    public var title: Swift::String
+    public var message: Swift::String
+    public var detail: Swift::String?
+    public var actions: [XReqResCore::PlanSheetContent.XReqResCore::FailureAction]
+    public init(title: Swift::String, message: Swift::String, detail: Swift::String? = nil, actions: [XReqResCore::PlanSheetContent.XReqResCore::FailureAction] = [])
+    public static func == (a: XReqResCore::PlanSheetContent.XReqResCore::FailureCopy, b: XReqResCore::PlanSheetContent.XReqResCore::FailureCopy) -> Swift::Bool
+  }
+  public enum FailureAction : Swift::Equatable {
+    case retry(title: Swift::String)
+    case open(title: Swift::String, url: Foundation::URL, hint: Swift::String)
+    public static func == (a: XReqResCore::PlanSheetContent.XReqResCore::FailureAction, b: XReqResCore::PlanSheetContent.XReqResCore::FailureAction) -> Swift::Bool
+  }
+  public struct Progress {
+    public var activating: Swift::String
+    public var deactivating: Swift::String
+    public init(activating: Swift::String, deactivating: Swift::String)
+  }
+  public struct LinkFailure {
+    public var title: Swift::String
+    public var message: (Foundation::URL) -> Swift::String
+    public var copyButton: Swift::String
+    public var dismissButton: Swift::String
+    public init(title: Swift::String, message: @escaping (Foundation::URL) -> Swift::String, copyButton: Swift::String, dismissButton: Swift::String)
+  }
+  public var productName: Swift::String
+  public var headline: Swift::String
+  public var price: Swift::String
+  public var priceDetail: Swift::String
+  public var taxNote: Swift::String
+  public var gainsTitle: Swift::String
+  public var gains: [XReqResCore::PlanSheetContent.XReqResCore::Gain]
+  public var gainsNote: Swift::String
+  public var allFeatures: XReqResCore::PlanSheetContent.XReqResCore::Link
+  public var reachedBadge: Swift::String
+  public var stepsTitle: Swift::String
+  public var steps: [XReqResCore::PlanSheetContent.XReqResCore::Step]
+  public var stepNumber: (Swift::Int) -> Swift::String
+  public var sheetFacts: [XReqResCore::PlanSheetContent.XReqResCore::Fact]
+  public var settingsFacts: [XReqResCore::PlanSheetContent.XReqResCore::Fact]
+  public var acceptance: Foundation::AttributedString
+  public var legalLinks: [XReqResCore::PlanSheetContent.XReqResCore::Link]
+  public var buy: XReqResCore::PlanSheetContent.XReqResCore::Link
+  public var activateTitle: Swift::String
+  public var continueTitle: Swift::String
+  public var freeBadge: Swift::String
+  public var keyEntry: XReqResCore::PlanSheetContent.XReqResCore::KeyEntry
+  public var licensed: XReqResCore::PlanSheetContent.XReqResCore::Licensed
+  public var failureCopy: (XReqResCore::LicenseFailure, XReqResCore::LicenseOperation) -> XReqResCore::PlanSheetContent.XReqResCore::FailureCopy
+  public var progress: XReqResCore::PlanSheetContent.XReqResCore::Progress
+  public var deactivatedNote: Swift::String
+  public var linkFailure: XReqResCore::PlanSheetContent.XReqResCore::LinkFailure
+  public init(productName: Swift::String, headline: Swift::String, price: Swift::String, priceDetail: Swift::String, taxNote: Swift::String, gainsTitle: Swift::String, gains: [XReqResCore::PlanSheetContent.XReqResCore::Gain], gainsNote: Swift::String, allFeatures: XReqResCore::PlanSheetContent.XReqResCore::Link, reachedBadge: Swift::String, stepsTitle: Swift::String, steps: [XReqResCore::PlanSheetContent.XReqResCore::Step], stepNumber: @escaping (Swift::Int) -> Swift::String, sheetFacts: [XReqResCore::PlanSheetContent.XReqResCore::Fact], settingsFacts: [XReqResCore::PlanSheetContent.XReqResCore::Fact], acceptance: Foundation::AttributedString, legalLinks: [XReqResCore::PlanSheetContent.XReqResCore::Link], buy: XReqResCore::PlanSheetContent.XReqResCore::Link, activateTitle: Swift::String, continueTitle: Swift::String, freeBadge: Swift::String, keyEntry: XReqResCore::PlanSheetContent.XReqResCore::KeyEntry, licensed: XReqResCore::PlanSheetContent.XReqResCore::Licensed, failureCopy: @escaping (XReqResCore::LicenseFailure, XReqResCore::LicenseOperation) -> XReqResCore::PlanSheetContent.XReqResCore::FailureCopy, progress: XReqResCore::PlanSheetContent.XReqResCore::Progress, deactivatedNote: Swift::String, linkFailure: XReqResCore::PlanSheetContent.XReqResCore::LinkFailure)
+}
+@_Concurrency::MainActor @preconcurrency public struct SubscriptionSettingsView : SwiftUICore::View {
+  @_Concurrency::MainActor @preconcurrency public init(isInPreferences: Swift::Bool = false, planSheet: XReqResCore::PlanSheetContent, reachedGainID: Swift::String? = nil, returnKeyBuys: Swift::Bool = false)
+  @_Concurrency::MainActor @preconcurrency public var body: some SwiftUICore::View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s11XReqResCore24SubscriptionSettingsViewV4bodyQrvp", 0) __
+}
+public enum AppGroup {
+  public static let identifier: Swift::String
+}
+public let extensionBundleId: Swift::String
+final public class SessionDetailsRenderer {
+  public enum RenderType {
+    case requestSummary
+    case requestHeaders
+    case requestBody
+    case responseSummary(attachmentSize: CoreFoundation::CGSize = CGSize(width: 300, height: 300))
+    case responseHeaders
+    case responseBody(attachmentSize: CoreFoundation::CGSize = CGSize(width: 300, height: 300))
+    case curl
+  }
+  public init()
+  final public func render(_ session: XReqResCore::SessionCodable, contentType: XReqResCore::SessionDetailsRenderer.XReqResCore::RenderType) -> Foundation::NSAttributedString
+  final public func renderPreformatted(_ text: Swift::String) -> Foundation::NSAttributedString
   @objc deinit
 }
 public struct Palette {
-  public static var red: XReqResCore.UXColor {
+  public static var red: XReqResCore::UXColor {
     get
   }
-  public static var pink: XReqResCore.UXColor {
+  public static var pink: XReqResCore::UXColor {
     get
   }
-  public static var green: XReqResCore.UXColor {
-    get
-  }
-}
-public typealias UXColor = AppKit.NSColor
-public typealias UXFont = AppKit.NSFont
-public typealias UXTextView = AppKit.NSTextView
-public typealias UXImage = AppKit.NSImage
-public typealias UXPasteboard = AppKit.NSPasteboard
-extension AppKit.NSColor {
-  public static var separator: AppKit.NSColor {
-    get
-  }
-  public static var label: AppKit.NSColor {
-    get
-  }
-  public static var systemBackground: AppKit.NSColor {
-    get
-  }
-  public static var secondaryLabel: AppKit.NSColor {
-    get
-  }
-  public static var secondarySystemFill: AppKit.NSColor {
-    get
-  }
-  public static var systemGray4: AppKit.NSColor {
-    get
-  }
-  public static var systemGray3: AppKit.NSColor {
-    get
-  }
-  public static var systemGray2: AppKit.NSColor {
+  public static var green: XReqResCore::UXColor {
     get
   }
 }
-extension AppKit.NSColor {
-  public static func dynamic(light: AppKit.NSColor, dark: AppKit.NSColor) -> AppKit.NSColor
+public typealias UXColor = AppKit::NSColor
+public typealias UXFont = AppKit::NSFont
+public typealias UXTextView = AppKit::NSTextView
+public typealias UXImage = AppKit::NSImage
+public typealias UXPasteboard = AppKit::NSPasteboard
+extension AppKit::NSColor {
+  public static var separator: AppKit::NSColor {
+    get
+  }
+  public static var label: AppKit::NSColor {
+    get
+  }
+  public static var systemBackground: AppKit::NSColor {
+    get
+  }
+  public static var secondaryLabel: AppKit::NSColor {
+    get
+  }
+  public static var secondarySystemFill: AppKit::NSColor {
+    get
+  }
+  public static var systemGray4: AppKit::NSColor {
+    get
+  }
+  public static var systemGray3: AppKit::NSColor {
+    get
+  }
+  public static var systemGray2: AppKit::NSColor {
+    get
+  }
 }
-extension Swift.Dictionary {
-  public func toJson() -> Swift.String
-  public static func fromJson(_ json: Swift.String) -> Swift.Dictionary<Key, Value>
+extension AppKit::NSColor {
+  public static func dynamic(light: AppKit::NSColor, dark: AppKit::NSColor) -> AppKit::NSColor
 }
-extension Swift.String {
-  public func tun_urlEncoded() -> Swift.String
-  public func tun_urlDecoded() -> Swift.String
-}
-extension Foundation.Data.CompressionAlgorithm : Swift.Equatable {}
-extension Foundation.Data.CompressionAlgorithm : Swift.Hashable {}
-extension XReqResCore.LicensePlan : Swift.Equatable {}
-extension XReqResCore.LicensePlan : Swift.Hashable {}
-extension XReqResCore.LicensePlan : Swift.RawRepresentable {}
-extension XReqResCore.RequestMethodOption : Swift.Equatable {}
-extension XReqResCore.RequestMethodOption : Swift.Hashable {}
-extension XReqResCore.RequestMethodOption : Swift.RawRepresentable {}
-extension XReqResCore.UrlMatcherType : Swift.Equatable {}
-extension XReqResCore.UrlMatcherType : Swift.Hashable {}
-extension XReqResCore.UrlMatcherType : Swift.RawRepresentable {}
-extension XReqResCore.RuleMode : Swift.Equatable {}
-extension XReqResCore.RuleMode : Swift.Hashable {}
-extension XReqResCore.RuleMode : Swift.RawRepresentable {}
-extension XReqResCore.RequestProtocolType : Swift.Equatable {}
-extension XReqResCore.RequestProtocolType : Swift.Hashable {}
-extension XReqResCore.RequestProtocolType : Swift.RawRepresentable {}
-extension XReqResCore.RuleCodable.CodingKeys : Swift.Equatable {}
-extension XReqResCore.RuleCodable.CodingKeys : Swift.Hashable {}
-extension XReqResCore.RuleCodable.CodingKeys : Swift.RawRepresentable {}
-extension XReqResCore.SubscriptionSettingsView : Swift.Sendable {}
-extension XReqResCore.LengthFieldPrependerError : Swift.Equatable {}
-extension XReqResCore.LengthFieldPrependerError : Swift.Hashable {}
-extension XReqResCore.SessionCodable.CodingKeys : Swift.Equatable {}
-extension XReqResCore.SessionCodable.CodingKeys : Swift.Hashable {}
-extension XReqResCore.SessionCodable.CodingKeys : Swift.RawRepresentable {}
-extension XReqResCore.ServerBusAction : Swift.Equatable {}
-extension XReqResCore.ServerBusAction : Swift.Hashable {}
-extension XReqResCore.ServerBusAction : Swift.RawRepresentable {}
-extension XReqResCore.ClientBusAction : Swift.Equatable {}
-extension XReqResCore.ClientBusAction : Swift.Hashable {}
-extension XReqResCore.ClientBusAction : Swift.RawRepresentable {}
-extension XReqResCore.RichSessionTextView : Swift.Sendable {}
-extension XReqResCore.HostCodable.CodingKeys : Swift.Equatable {}
-extension XReqResCore.HostCodable.CodingKeys : Swift.Hashable {}
-extension XReqResCore.HostCodable.CodingKeys : Swift.RawRepresentable {}
-extension XReqResCore.NIOLengthFieldBasedFrameDecoderError : Swift.Equatable {}
-extension XReqResCore.NIOLengthFieldBasedFrameDecoderError : Swift.Hashable {}
+extension XReqResCore::HostCodable.XReqResCore::CodingKeys : Swift::Equatable {}
+extension XReqResCore::HostCodable.XReqResCore::CodingKeys : Swift::Hashable {}
+extension XReqResCore::HostCodable.XReqResCore::CodingKeys : Swift::RawRepresentable {}
+extension XReqResCore::LiveExchangePhase : Swift::Hashable {}
+extension XReqResCore::LiveExchangePhase : Swift::RawRepresentable {}
+extension XReqResCore::LiveStartReason : Swift::Hashable {}
+extension XReqResCore::LiveStartReason : Swift::RawRepresentable {}
+extension XReqResCore::LiveTextStatus : Swift::Hashable {}
+extension XReqResCore::LiveTextStatus : Swift::RawRepresentable {}
+extension XReqResCore::RuleCodable.XReqResCore::CodingKeys : Swift::Equatable {}
+extension XReqResCore::RuleCodable.XReqResCore::CodingKeys : Swift::Hashable {}
+extension XReqResCore::RuleCodable.XReqResCore::CodingKeys : Swift::RawRepresentable {}
+extension XReqResCore::SessionOutcome : Swift::Equatable {}
+extension XReqResCore::SessionOutcome : Swift::Hashable {}
+extension XReqResCore::SessionOutcome : Swift::RawRepresentable {}
+extension XReqResCore::SessionFailurePhase : Swift::Equatable {}
+extension XReqResCore::SessionFailurePhase : Swift::Hashable {}
+extension XReqResCore::SessionFailurePhase : Swift::RawRepresentable {}
+extension XReqResCore::SessionCodable.XReqResCore::CodingKeys : Swift::Equatable {}
+extension XReqResCore::SessionCodable.XReqResCore::CodingKeys : Swift::Hashable {}
+extension XReqResCore::SessionCodable.XReqResCore::CodingKeys : Swift::RawRepresentable {}
+extension XReqResCore::WebSocketDirection : Swift::Hashable {}
+extension XReqResCore::WebSocketDirection : Swift::RawRepresentable {}
+extension XReqResCore::WebSocketOpcode : Swift::Hashable {}
+extension XReqResCore::WebSocketOpcode : Swift::RawRepresentable {}
+extension XReqResCore::WebSocketPreviewEncoding : Swift::Hashable {}
+extension XReqResCore::WebSocketPreviewEncoding : Swift::RawRepresentable {}
+extension XReqResCore::WebSocketEnd : Swift::Hashable {}
+extension XReqResCore::WebSocketEnd : Swift::RawRepresentable {}
+extension XReqResCore::RequestMethodOption : Swift::Equatable {}
+extension XReqResCore::RequestMethodOption : Swift::Hashable {}
+extension XReqResCore::RequestMethodOption : Swift::RawRepresentable {}
+extension XReqResCore::UrlMatcherType : Swift::Equatable {}
+extension XReqResCore::UrlMatcherType : Swift::Hashable {}
+extension XReqResCore::UrlMatcherType : Swift::RawRepresentable {}
+extension XReqResCore::RuleMode : Swift::Equatable {}
+extension XReqResCore::RuleMode : Swift::Hashable {}
+extension XReqResCore::RuleMode : Swift::RawRepresentable {}
+extension XReqResCore::RequestProtocolType : Swift::Equatable {}
+extension XReqResCore::RequestProtocolType : Swift::Hashable {}
+extension XReqResCore::RequestProtocolType : Swift::RawRepresentable {}
+extension XReqResCore::RichSessionTextView : Swift::Sendable {}
+extension XReqResCore::BreakpointDecisionCodable.XReqResCore::Action : Swift::Equatable {}
+extension XReqResCore::BreakpointDecisionCodable.XReqResCore::Action : Swift::Hashable {}
+extension XReqResCore::BreakpointDecisionCodable.XReqResCore::Action : Swift::RawRepresentable {}
+extension XReqResCore::ClientBusAction : Swift::Equatable {}
+extension XReqResCore::ClientBusAction : Swift::Hashable {}
+extension XReqResCore::ClientBusAction : Swift::RawRepresentable {}
+extension XReqResCore::NIOLengthFieldBasedFrameDecoderError : Swift::Equatable {}
+extension XReqResCore::NIOLengthFieldBasedFrameDecoderError : Swift::Hashable {}
+extension XReqResCore::LengthFieldPrependerError : Swift::Equatable {}
+extension XReqResCore::LengthFieldPrependerError : Swift::Hashable {}
+extension XReqResCore::RejectedBusClient.XReqResCore::Reason : Swift::Equatable {}
+extension XReqResCore::RejectedBusClient.XReqResCore::Reason : Swift::Hashable {}
+extension XReqResCore::RejectedBusClient.XReqResCore::Reason : Swift::RawRepresentable {}
+extension XReqResCore::ServerBusAction : Swift::Equatable {}
+extension XReqResCore::ServerBusAction : Swift::Hashable {}
+extension XReqResCore::ServerBusAction : Swift::RawRepresentable {}
+extension Foundation::Data.XReqResCore::CompressionAlgorithm : Swift::Equatable {}
+extension Foundation::Data.XReqResCore::CompressionAlgorithm : Swift::Hashable {}
+extension XReqResCore::MitmService.XReqResCore::StartFailure : Swift::Hashable {}
+extension XReqResCore::LicenseOperation : Swift::Equatable {}
+extension XReqResCore::LicenseOperation : Swift::Hashable {}
+extension XReqResCore::LicenseOperation : Swift::BitwiseCopyable {}
+extension XReqResCore::LicenseFailure.XReqResCore::NetworkProblem : Swift::Hashable {}
+extension XReqResCore::LicenseFailure.XReqResCore::NetworkProblem : Swift::BitwiseCopyable {}
+extension XReqResCore::SubscriptionSettingsView : Swift::Sendable {}
