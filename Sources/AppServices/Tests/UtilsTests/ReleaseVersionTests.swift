@@ -31,8 +31,8 @@ final class ReleaseVersionTests: XCTestCase {
     /// Builds already installed: every later build of either target must be
     /// above them, or macOS keeps the installed extension running behind the
     /// new app.
-    static let installedAppBuild = 61
-    static let installedExtensionBuild = 25
+    static let installedAppBuild = 62
+    static let installedExtensionBuild = 26
 
     private struct Configuration { let bundleID: String; let build: Int; let marketing: String }
 
@@ -61,7 +61,7 @@ final class ReleaseVersionTests: XCTestCase {
         XCTAssertEqual(tunnel.count, 2, "Debug and Release")
         for config in tunnel {
             XCTAssertGreaterThan(config.build, Self.installedExtensionBuild,
-                                 "macOS would keep the installed 1.1.0/\(Self.installedExtensionBuild) extension")
+                                 "macOS would keep the installed extension (build \(Self.installedExtensionBuild))")
         }
         XCTAssertEqual(Set(tunnel.map(\.build)).count, 1, "Debug and Release must agree")
     }

@@ -306,6 +306,15 @@ codesign --verify --deep --strict "${APP}" 2>/dev/null \
   && ok "app signature verifies after re-signing" \
   || die "app signature broken after re-signing"
 
+# Every library the app and its system extension load through @rpath must be
+# inside the bundle that loads it. The extension runs from
+# /Library/SystemExtensions, not from the app, and what this Mac's newer macOS
+# provides in /usr/lib/swift may be missing on the oldest macOS ReqRes supports:
+# 1.1.0's extension died at launch on macOS 14 and 15 for want of
+# libswiftCompatibilitySpan.dylib, which only the app's bundle carried.
+"${ROOT}/Scripts/bundle-libraries-check.sh" "${APP}" \
+  || die "a library the app or its system extension needs is not inside its bundle (see above): this build would not start on an older macOS"
+
 # ------------------------------------------------------------- notarize
 
 if [ "${NOTARIZE}" -eq 1 ]; then

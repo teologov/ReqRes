@@ -53,8 +53,9 @@
 #    2. the template: 1.0.4's DS_Store only with the volume name it was made
 #       on;
 #    3. the app: ReqRes (com.oloapps.ReqRes) with its one system extension,
-#       the version and build numbers the checkout's project sets, team
-#       ZUP9ZNBCHM;
+#       every library each of them loads through @rpath inside its own bundle
+#       (Scripts/bundle-libraries-check.sh), the version and build numbers
+#       the checkout's project sets, team ZUP9ZNBCHM;
 #    4. its cores: Sources/XReqResCore.xcframework and
 #       Sources/XReqResCore.provenance.json are committed and unchanged in
 #       the checkout (git status, then git hash-object of the record and of
@@ -80,7 +81,8 @@
 #       notarizes and staples it, then asks Gatekeeper and stapler about it;
 #    9. mounts it read-only, hidden from Finder, and checks the layout files
 #       byte for byte, the symlink, the volume, and the app inside
-#       (signature, ticket, Gatekeeper, version, its cores' UUIDs and keys);
+#       (signature, ticket, Gatekeeper, version, its cores' UUIDs and keys,
+#       the libraries its bundles load);
 #       hdiutil verify checks the image;
 #   10. moves it into --out without overwriting anything (a hard link gives
 #       it its name, and fails on any name that exists), and prints its
@@ -456,6 +458,14 @@ done
 EXT_BUILD="$(plist_value "${EXT}/Contents/Info.plist" CFBundleVersion || true)"
 EXT_VERSION="$(plist_value "${EXT}/Contents/Info.plist" CFBundleShortVersionString || echo '?') (${EXT_BUILD:-?})"
 say "app: ReqRes ${VERSION} (${BUILD}), extension ${EXT_VERSION}, from ${APP}"
+
+# Every library the app and its system extension load through @rpath must be
+# inside the bundle that loads it: the extension runs from
+# /Library/SystemExtensions, and this Mac's /usr/lib/swift holds libraries
+# that older macOS versions lack (1.1.0's extension died at launch on macOS 14
+# and 15 for want of libswiftCompatibilitySpan.dylib).
+"${SCRIPT_DIR}/bundle-libraries-check.sh" "${APP}" \
+  || die "a library the app or its system extension needs is not inside its bundle (see above): it would not start on an older macOS"
 
 # The checkout's provenance record judges the cores below, so the app must
 # be a build this checkout describes: its version and both build numbers
@@ -864,6 +874,8 @@ esac
   && [ "$(plist_value "${INNER}/Contents/Info.plist" CFBundleVersion || true)" = "${BUILD}" ] \
   || die "the app inside the DMG is not ${VERSION} (${BUILD})"
 check_core_copies "${INNER}" "the DMG's ${APP_NAME}"
+"${SCRIPT_DIR}/bundle-libraries-check.sh" "${INNER}" \
+  || die "a library the app inside the DMG or its system extension needs is not inside its bundle"
 INNER_CORES=("${INNER}/Contents/Frameworks/${CORE_IN_FRAMEWORK}"
   "${INNER}/Contents/Library/SystemExtensions/${EXT_BUNDLE_ID}.systemextension/Contents/Frameworks/${CORE_IN_FRAMEWORK}")
 INNER_KEYS_FLAG=0
@@ -939,6 +951,8 @@ cat <<EOF
 Checked by this script:
   - the app is ${VERSION} (${BUILD}), extension ${EXT_VERSION}: the numbers the checkout
     sets (${REPO} at ${HEAD_SHORT});
+  - every library the app and its system extension load through @rpath is inside the
+    bundle that loads it (bundle-libraries-check.sh), in the app and inside the DMG;
   - both its cores (the app's and the system extension's) carry the Mach-O UUIDs of the
     checkout's committed ${XCFRAMEWORK_PATH}, and neither that binary nor
     its provenance record (core ${RECORD_CORE}, keys "${RECORD_KEYS}") has uncommitted
